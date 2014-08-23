@@ -14,8 +14,6 @@ namespace LD30
         private Level _CurrentLevel;
         private readonly Dictionary<string, Logic.Block.BlockType> _BlockTypes = new Dictionary<string, Block.BlockType>();
 
-
-
         public GameCore()
             : base()
         {
