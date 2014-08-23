@@ -10,11 +10,27 @@ namespace LD30.Logic
 {
     internal class Block
     {
+        public const int BLOCK_SIZE_MULTIPLIER = 32;
+
+        public struct BlockType
+        {
+            public Texture2D Texture;
+            public Color Colour;
+            public Vector2 Size;
+        }
 
         private Texture2D _BlockTexture;
         private Vector2 _Position;
         private Color _Colour;
         private Vector2 _Size;
+
+        public Block(BlockType type, Vector2 position)
+        {
+            _BlockTexture = type.Texture;
+            _Position = position;
+            _Colour = type.Colour;
+            _Size = type.Size;
+        }
 
         public virtual void Draw()
         {

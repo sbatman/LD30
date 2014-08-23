@@ -8,7 +8,7 @@ namespace LD30.Logic
 {
     internal class Level
     {
-        private Block[,] _BlockData;
+        private readonly Block[,] _BlockData;
         private Vector2 _Size;
 
         public Level(Vector2 size)
@@ -19,6 +19,7 @@ namespace LD30.Logic
 
         public virtual void Draw()
         {
+            GameCore.SpriteBatch.Begin();
             for (int x = 0; x < _Size.X; x++)
             {
                 for (int y = 0; y < _Size.Y; y++)
@@ -27,6 +28,7 @@ namespace LD30.Logic
                     _BlockData[x, y].Draw();
                 }
             }
+            GameCore.SpriteBatch.End();
         }
 
         public virtual void Update()
@@ -39,6 +41,16 @@ namespace LD30.Logic
                     _BlockData[x, y].Update();
                 }
             }
+        }
+
+        public virtual void PlaceBlock(Block.BlockType type, Vector2 position)
+        {
+            int x = (int)position.X;
+            int y = (int)position.Y;
+            if (x >= _Size.X || x < 0) throw new ArgumentOutOfRangeException("position");
+            if (y >= _Size.Y || y < 0) throw new ArgumentOutOfRangeException("position");
+
+            _BlockData[x, y] = new Block(type, position * Block.BLOCK_SIZE_MULTIPLIER);
         }
     }
 }
