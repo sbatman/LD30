@@ -11,6 +11,7 @@ using NerfCorev2.PhysicsSystem.Common;
 using NerfCorev2.PhysicsSystem.Dynamics;
 using NerfCorev2.PhysicsSystem.Dynamics.Contacts;
 using NerfCorev2.Wrappers;
+using Keyboard = NerfCorev2.Input.Keyboard;
 
 namespace LD30.Logic
 {
@@ -18,10 +19,7 @@ namespace LD30.Logic
     {
         public const int FRAME_HEIGHT = 36;
         public const int FRAME_WIDTH = 32;
-        private const int MAX_PHYSICS_STEPS = 4;
-
-        private static Vector2 _Gravity = new Vector2(0, 0.1f);
-
+        
         private Vector2 _Position;
         private Vector2 _Velocity;
         private Rect _CurrentDrawnRectangle;
@@ -38,7 +36,6 @@ namespace LD30.Logic
         //StateVariables
         private bool _Jumped;
 
-
         /// <summary>
         /// The level this character is active on
         /// </summary>
@@ -47,7 +44,11 @@ namespace LD30.Logic
         public Vector2 Position
         {
             get { return _Position; }
-            set { _Position = value; }
+            set
+            {
+                _Position = value;
+                _PhysicsObject.PhysicsFixture.Body.Position = value*0.01f;
+            }
         }
 
         public Color Colour
@@ -130,21 +131,21 @@ namespace LD30.Logic
 
         private bool IsJumpPressed()
         {
-            return NerfCorev2.Input.Keyboard.IsKeyDown(Keys.Space, Game.GAME_CONTROL_LOCK) ||
-                   NerfCorev2.Input.Keyboard.IsKeyDown(Keys.W, Game.GAME_CONTROL_LOCK) ||
-                   NerfCorev2.Input.Keyboard.IsKeyDown(Keys.Up, Game.GAME_CONTROL_LOCK);
+            return Keyboard.IsKeyDown(Keys.Space, Game.GAME_CONTROL_LOCK) ||
+                   Keyboard.IsKeyDown(Keys.W, Game.GAME_CONTROL_LOCK) ||
+                   Keyboard.IsKeyDown(Keys.Up, Game.GAME_CONTROL_LOCK);
         }
 
         private bool IsLeftPressed()
         {
-            return NerfCorev2.Input.Keyboard.IsKeyDown(Keys.Left, Game.GAME_CONTROL_LOCK) ||
-                   NerfCorev2.Input.Keyboard.IsKeyDown(Keys.A, Game.GAME_CONTROL_LOCK);
+            return Keyboard.IsKeyDown(Keys.Left, Game.GAME_CONTROL_LOCK) ||
+                   Keyboard.IsKeyDown(Keys.A, Game.GAME_CONTROL_LOCK);
         }
 
         private bool IsRightPressed()
         {
-            return NerfCorev2.Input.Keyboard.IsKeyDown(Keys.Right, Game.GAME_CONTROL_LOCK) ||
-                   NerfCorev2.Input.Keyboard.IsKeyDown(Keys.D, Game.GAME_CONTROL_LOCK);
+            return Keyboard.IsKeyDown(Keys.Right, Game.GAME_CONTROL_LOCK) ||
+                   Keyboard.IsKeyDown(Keys.D, Game.GAME_CONTROL_LOCK);
         }
 
 

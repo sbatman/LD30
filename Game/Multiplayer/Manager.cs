@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Bounce.Multiplayer;
 using Bounce.Multiplayer.Ghosts;
 using InsaneDev.Networking;
 using Microsoft.Xna.Framework;
 
-namespace Bounce.Multiplayer
+namespace LD30.Multiplayer
 {
     internal static class Manager
     {
@@ -15,6 +16,7 @@ namespace Bounce.Multiplayer
         public const int PID_ANNOUNCEPLAYERDETAILS = 400;
         public const int PID_ANNOUNCEEXISTENCE = 401;
         public const int PID_REQUESTPLAYERDETAILS = 402;
+        public const int PID_SENDWORLDPOSITION = 500;
 
         public enum MuliplayerModes
         {
@@ -24,8 +26,8 @@ namespace Bounce.Multiplayer
         internal static MuliplayerModes Mode = MuliplayerModes.GHOST;
         internal static Host _Server;
         internal static Client _Client;
+        internal static List<Base> _Objects = new List<Base>();
 
-        internal static List<Base>[] _Objects = new List<Base>[1];
 
         public static bool Hosting
         {
@@ -62,12 +64,11 @@ namespace Bounce.Multiplayer
             // UIManager.PMPGhostGame.SetVisibility(true);
         }
 
-        internal static void RegisterObject(int z, Base gameObject)
+        internal static void RegisterObject(Base gameObject)
         {
             lock (_Objects)
             {
-                if (_Objects[z] == null) _Objects[z] = new List<Base>();
-                _Objects[z].Add(gameObject);
+                _Objects.Add(gameObject);
             }
         }
 
@@ -76,22 +77,22 @@ namespace Bounce.Multiplayer
 
         }
 
-        internal static void LevelObjectUpdate(int z)
+        internal static void LevelObjectUpdate()
         {
 
         }
 
-        internal static void LevelBlockDraw(int z)
+        internal static void LevelBlockDraw()
         {
 
         }
 
-        internal static void LevelObjectDraw(GameTime gameTime, int z)
+        internal static void LevelObjectDraw()
         {
             lock (_Objects)
             {
-                if (_Objects[z] == null) return;
-                foreach (Base o in _Objects[z])
+
+                foreach (Base o in _Objects)
                 {
                     o.Draw();
                 }
@@ -102,16 +103,14 @@ namespace Bounce.Multiplayer
         {
             _Client.Disconnect();
             _Client = null;
-            for (int i = 0; i < _Objects.Length; i++)
-            {
-                List<Base> o = _Objects[i];
-                if (o == null) continue;
 
-                foreach (Base b in o) b.Dispose();
+            List<Base> o = _Objects;
 
-                o.Clear();
-                _Objects[i] = null;
-            }
+            foreach (Base b in o) b.Dispose();
+
+            o.Clear();
+            _Objects = null;
+
         }
 
         internal static void Dispose()

@@ -1,23 +1,42 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using InsaneDev.Networking;
 using InsaneDev.Networking.Server;
-using Base = InsaneDev.Networking.Server.Base;
+using NerfCorev2.Plugins;
 
-namespace Bounce.Multiplayer
+namespace LD30.Multiplayer
 {
     class Host : Base
     {
         private static long _NextObjectID = 0;
         private static readonly object _IDLock = new object();
+        private static readonly List<ConnectedClient> _ConnectedClients = new List<ConnectedClient>();
         internal Host()
         {
             Init(new IPEndPoint(IPAddress.Any, 3456), typeof(ConnectedClient));
             StartListening();
         }
 
+        public static void SendUpdatedWorldPositions()
+        {
+            lock (_ConnectedClients)
+            {
+                int position = 0;
+                foreach (ConnectedClient client in _ConnectedClients)
+                {
+                    client.WorldOffset = position;
+                    Packet p = new Packet(Manager.PID_SENDWORLDPOSITION);
+                    p.AddInt(position);
+                    position++;
+                    client.SendPacket(p);
+                }
+            }
+        }
+
         class ConnectedClient : ClientConnection
         {
+            public int WorldOffset = -1;
             public ConnectedClient(TcpClient client)
                 : base(client)
             {
@@ -26,12 +45,18 @@ namespace Bounce.Multiplayer
 
             protected override void OnConnect()
             {
-                NerfCorev2.Plugins.Core.HookModule("Console", "AddStringToConsole", new object[] { "Client Connected" });
+                Core.HookModule("Console", "AddStringToConsole", new object[] { "Client Connected" });
+                lock (_ConnectedClients) _ConnectedClients.Add(this);
+                SendUpdatedWorldPositions();
+
+
             }
 
             protected override void OnDisconnect()
             {
-                NerfCorev2.Plugins.Core.HookModule("Console", "AddStringToConsole", new object[] { "Client Disconnected" });
+                Core.HookModule("Console", "AddStringToConsole", new object[] { "Client Disconnected" });
+                lock (_ConnectedClients) _ConnectedClients.Remove(this);
+                SendUpdatedWorldPositions();
             }
 
             protected override void ClientUpdateLogic()

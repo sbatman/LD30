@@ -14,12 +14,18 @@ namespace LD30.Logic
     internal class Level
     {
         private readonly Block[,] _BlockData;
-        private Logic.Character _ActiveCharacter;
+        private Character _ActiveCharacter;
         private Vector2 _Size;
         private Phys LevelWallLeft;
         private Phys LevelWallRight;
+        private int _WorldOffset;
 
         private readonly object _LockingObject = new object();
+
+        public Vector2 Size
+        {
+            get { return _Size; }
+        }
 
         public Level(Vector2 size)
         {
@@ -35,7 +41,7 @@ namespace LD30.Logic
 
         public virtual void Draw()
         {
-            GameCore.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, GameCore.PrimaryCamera);
+
             for (int x = 0; x < _Size.X; x++)
             {
                 for (int y = 0; y < _Size.Y; y++)
@@ -47,7 +53,29 @@ namespace LD30.Logic
 
             _ActiveCharacter.Draw();
 
-            GameCore.SpriteBatch.End();
+
+        }
+        public void OffsetWorld(int i)
+        {
+            int difference = i - _WorldOffset;
+            _WorldOffset = i;
+            Vector2 start = Vector2.Zero + (Vector2.UnitX * i * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
+
+            LevelWallLeft.PhysicsFixture.Body.Position = new Vector2(start.X - 32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
+            LevelWallRight.PhysicsFixture.Body.Position = new Vector2(start.X + (_Size.X * Block.BLOCK_SIZE_MULTIPLIER), _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
+
+            if (difference != 0)
+            {
+                for (int x = 0; x < _Size.X; x++)
+                {
+                    for (int y = 0; y < _Size.Y; y++)
+                    {
+                        if (_BlockData[x, y] == null) continue;
+                        _BlockData[x, y].SetPosition(start + new Vector2(x * Block.BLOCK_SIZE_MULTIPLIER, y * Block.BLOCK_SIZE_MULTIPLIER));
+                    }
+                }
+                _ActiveCharacter.Position += difference * (Vector2.UnitX * i * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
+            }
         }
 
         public virtual void Update()

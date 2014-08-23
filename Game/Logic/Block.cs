@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using NerfCorev2.PhysicsSystem;
 using NerfCorev2.PhysicsSystem.Dynamics;
 using SharpDX.Direct2D1;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,18 +26,29 @@ namespace LD30.Logic
         private Color _Colour;
         private Vector2 _Size;
         private Phys _PhysicsObject;
+        private bool _HasPhysics;
 
 
-        public Block(BlockType type, Vector2 position)
+        public Block(BlockType type, Vector2 position, bool physics = true)
         {
             _BlockTexture = type.Texture;
             _Position = position;
             _Colour = type.Colour;
             _Size = type.Size;
-            _PhysicsObject = new Phys(NerfCorev2.PhysicsSystem.Core.CreateRectangle(_Size * 0.01f, _Position * 0.01f));
-            _PhysicsObject.PhysicsFixture.Body.BodyType = BodyType.Static;
-            _PhysicsObject.PhysicsFixture.UserData = this;
+            _HasPhysics = physics;
+            if (_HasPhysics)
+            {
+                _PhysicsObject = new Phys(Core.CreateRectangle(_Size * 0.01f, _Position * 0.01f));
+                _PhysicsObject.PhysicsFixture.Body.BodyType = BodyType.Static;
+                _PhysicsObject.PhysicsFixture.UserData = this;
+            }
 
+        }
+
+        public virtual void SetPosition(Vector2 newPosition)
+        {
+            _Position = newPosition;
+            if (_HasPhysics) _PhysicsObject.PhysicsFixture.Body.Position = newPosition * 0.01f;
         }
 
         public virtual void Draw()

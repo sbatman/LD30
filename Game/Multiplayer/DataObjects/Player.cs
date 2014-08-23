@@ -4,6 +4,7 @@
     {
         private long _ID;
         private string _Name;
+        private int _WorldOffset;
 
         public long ID
         {
@@ -15,6 +16,12 @@
         {
             get { return _Name; }
             set { _Name = value; }
+        }
+
+        public int WorldOffset
+        {
+            get { return _WorldOffset; }
+            set { _WorldOffset = value; }
         }
 
         public Player()
