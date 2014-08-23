@@ -3,3 +3,5 @@
 /Game/obj
 /Game/bin
 /*.suo
+/*.user
+/Game/*.cachefile

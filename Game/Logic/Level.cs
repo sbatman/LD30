@@ -9,6 +9,7 @@ namespace LD30.Logic
     internal class Level
     {
         private readonly Block[,] _BlockData;
+        private readonly List<Logic.Character> _ActiveCharacters = new List<Character>();
         private Vector2 _Size;
 
         public Level(Vector2 size)
@@ -28,6 +29,10 @@ namespace LD30.Logic
                     _BlockData[x, y].Draw();
                 }
             }
+            foreach (Character character in _ActiveCharacters)
+            {
+                character.Draw();
+            }
             GameCore.SpriteBatch.End();
         }
 
@@ -41,6 +46,10 @@ namespace LD30.Logic
                     _BlockData[x, y].Update();
                 }
             }
+            foreach (Character character in _ActiveCharacters)
+            {
+                character.Update();
+            }
         }
 
         public virtual void PlaceBlock(Block.BlockType type, Vector2 position)
@@ -51,6 +60,12 @@ namespace LD30.Logic
             if (y >= _Size.Y || y < 0) throw new ArgumentOutOfRangeException("position");
 
             _BlockData[x, y] = new Block(type, position * Block.BLOCK_SIZE_MULTIPLIER);
+        }
+
+        public virtual void AddCharacterToLevel(Character character)
+        {
+            _ActiveCharacters.Add(character);
+            character.SetLevel(this);
         }
     }
 }
