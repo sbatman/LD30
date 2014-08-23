@@ -67,5 +67,14 @@ namespace LD30.Logic
             _ActiveCharacters.Add(character);
             character.SetLevel(this);
         }
+
+        public virtual Block BlockAtGameCoordinates(Vector2 position)
+        {
+            int x = (int)position.X / Block.BLOCK_SIZE_MULTIPLIER;
+            int y = (int)position.Y / Block.BLOCK_SIZE_MULTIPLIER;
+            if (x >= _Size.X || x < 0) return null;
+            if (y >= _Size.Y || y < 0) return null;
+            return _BlockData[x, y];
+        }
     }
 }

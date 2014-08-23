@@ -11,8 +11,12 @@ namespace LD30.Logic
     {
         private const int FRAME_HEIGHT = 36;
         private const int FRAME_WIDTH = 32;
+        private const int MAX_PHYSICS_STEPS = 4;
+
+        private static Vector2 _Gravity = new Vector2(0, 0.1f);
 
         private Vector2 _Position;
+        private Vector2 _Velocity;
         private Rectangle _CurrentDrawnRectangle;
         private Texture2D _Texture;
         private Vector2 _Size;
@@ -52,7 +56,25 @@ namespace LD30.Logic
 
         public virtual void Update()
         {
+            Vector2 appliedVelocity = Vector2.Zero;
+            _Velocity += _Gravity;
+            _Velocity *= distanceToObstruction(_Velocity);
+            _Position += appliedVelocity;
+        }
 
+        private float distanceToObstruction(Vector2 direction)
+        {
+            int physicsStep = 0;
+            while (physicsStep < MAX_PHYSICS_STEPS)
+            {
+                Block blockBelow = _CurrentLevel.BlockAtGameCoordinates(_Position + (_Velocity / (physicsStep + 1)));
+                if (blockBelow == null)
+                {
+                    break;
+                }
+                physicsStep++;
+            }
+            return 1.0f / (physicsStep + 1);
         }
 
         private void SetAnimationFrame(int x, int y)
