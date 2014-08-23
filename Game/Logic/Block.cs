@@ -23,6 +23,7 @@ namespace LD30.Logic
         private Vector2 _Position;
         private Color _Colour;
         private Vector2 _Size;
+         
 
         public Block(BlockType type, Vector2 position)
         {
@@ -34,7 +35,7 @@ namespace LD30.Logic
 
         public virtual void Draw()
         {
-            GameCore.SpriteBatch.Draw(_BlockTexture, _Position, _Colour);
+            Game.SpriteBatch.Draw(_BlockTexture, _Position, _Colour);
         }
 
         public virtual void Update()

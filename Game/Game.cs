@@ -1,39 +1,39 @@
 ﻿using System.Collections.Generic;
 using LD30.Logic;
 using Microsoft.Xna.Framework;
+using NerfCorev2;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using NerfCorev2.PhysicsSystem;
 
 
 namespace LD30
 {
-    public class GameCore : Game
+    public class Game : GameCore
     {
-        //core
-        public static SpriteBatch SpriteBatch;
-        private GraphicsDeviceManager _Graphics;
 
         //game
         private Level _CurrentLevel;
 
         //content
-        public static Texture2D _ContentCharacterTexture;
+        public static Texture2D ContentCharacterTexture;
         private readonly Dictionary<string, Logic.Block.BlockType> _BlockTypes = new Dictionary<string, Block.BlockType>();
 
         //test
         private Character testcharacter;
-
-
-        public GameCore()
-            : base()
+        public Game()
+            : base("LD30", true)
         {
-            _Graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+
         }
 
-        protected override void LoadContent()
+        protected override void CoreInit()
         {
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
+
+        }
+
+        protected override void CoreLoadContent()
+        {
+            Core.LoadContent(Content, GraphicsDevice);
             //Sort out blocks
             _BlockTypes.Add("Main", new Block.BlockType() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
 
@@ -45,18 +45,18 @@ namespace LD30
             _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(4, 4));
 
             //Sort out characters
-            _ContentCharacterTexture = Content.Load<Texture2D>("Graphics/Characters/Main");
+            ContentCharacterTexture = Content.Load<Texture2D>("Graphics/Characters/Main");
 
-            testcharacter = new Character(_ContentCharacterTexture);
+            testcharacter = new Character(ContentCharacterTexture);
             _CurrentLevel.AddCharacterToLevel(testcharacter);
         }
 
-        protected override void UnloadContent()
+        protected override void CorePostLoadContent()
         {
 
         }
 
-        protected override void Update(GameTime gameTime)
+        protected override void CoreUpdate()
         {
             if (Input.IsPressed_Back())
             {
@@ -64,17 +64,33 @@ namespace LD30
             }
 
             if (_CurrentLevel != null) _CurrentLevel.Update();
-
-            base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void CoreDraw()
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             if (_CurrentLevel != null) _CurrentLevel.Draw();
+        }
 
-            base.Draw(gameTime);
+        protected override void CoreResChange()
+        {
+
+        }
+
+        protected override void CoreStartExiting()
+        {
+
+        }
+
+        protected override bool CoreDebugCommandEntered(string[] action)
+        {
+            return false;
+        }
+
+        protected override void UnloadContent()
+        {
+
         }
     }
 }

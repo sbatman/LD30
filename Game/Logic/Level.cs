@@ -20,7 +20,7 @@ namespace LD30.Logic
 
         public virtual void Draw()
         {
-            GameCore.SpriteBatch.Begin();
+            Game.SpriteBatch.Begin();
             for (int x = 0; x < _Size.X; x++)
             {
                 for (int y = 0; y < _Size.Y; y++)
@@ -33,7 +33,7 @@ namespace LD30.Logic
             {
                 character.Draw();
             }
-            GameCore.SpriteBatch.End();
+            Game.SpriteBatch.End();
         }
 
         public virtual void Update()

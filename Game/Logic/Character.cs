@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NerfCorev2.Wrappers;
 
 namespace LD30.Logic
 {
@@ -17,7 +18,7 @@ namespace LD30.Logic
 
         private Vector2 _Position;
         private Vector2 _Velocity;
-        private Rectangle _CurrentDrawnRectangle;
+        private Rect _CurrentDrawnRectangle;
         private Texture2D _Texture;
         private Vector2 _Size;
         private Color _Colour = Color.White;
@@ -51,7 +52,7 @@ namespace LD30.Logic
         public virtual void Draw()
         {
             if (!_Visible) return;
-            GameCore.SpriteBatch.Draw(_Texture, _Position, _CurrentDrawnRectangle, _Colour);
+            Game.SpriteBatch.Draw(_Texture, _Position, _CurrentDrawnRectangle, _Colour);
         }
 
         public virtual void Update()
@@ -67,7 +68,7 @@ namespace LD30.Logic
             int physicsStep = 0;
             while (physicsStep < MAX_PHYSICS_STEPS)
             {
-                Block blockBelow = _CurrentLevel.BlockAtGameCoordinates(_Position + (_Velocity / (physicsStep + 1)));
+                Block blockBelow = _CurrentLevel.BlockAtGameCoordinates(_Position + (direction / (physicsStep + 1)));
                 if (blockBelow == null)
                 {
                     break;
@@ -79,7 +80,7 @@ namespace LD30.Logic
 
         private void SetAnimationFrame(int x, int y)
         {
-            _CurrentDrawnRectangle = new Rectangle(x * FRAME_WIDTH, y * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+            _CurrentDrawnRectangle = new Rect(x * FRAME_WIDTH, y * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
         }
 
         public virtual void SetLevel(Level currentLevel)
