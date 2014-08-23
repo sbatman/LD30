@@ -34,6 +34,7 @@ namespace LD30
         protected override void CoreLoadContent()
         {
             Core.LoadContent(Content, GraphicsDevice);
+            Core.Gravity.Value = new Vector2(0, 9);
             //Sort out blocks
             _BlockTypes.Add("Main", new Block.BlockType() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
 
@@ -58,18 +59,11 @@ namespace LD30
 
         protected override void CoreUpdate()
         {
-            if (Input.IsPressed_Back())
-            {
-                Exit();
-            }
-
             if (_CurrentLevel != null) _CurrentLevel.Update();
         }
 
         protected override void CoreDraw()
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
             if (_CurrentLevel != null) _CurrentLevel.Draw();
         }
 

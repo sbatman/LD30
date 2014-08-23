@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NerfCorev2.PhysicsSystem.Dynamics;
 using NerfCorev2.Wrappers;
 
 namespace LD30.Logic
@@ -23,6 +24,8 @@ namespace LD30.Logic
         private Vector2 _Size;
         private Color _Colour = Color.White;
         private bool _Visible;
+        private Phys _PhysicsObject;
+
 
         /// <summary>
         /// The level this character is active on
@@ -47,36 +50,30 @@ namespace LD30.Logic
             _Size = new Vector2(FRAME_WIDTH, FRAME_HEIGHT);
             SetAnimationFrame(1, 2);
             _Visible = true;
+            _PhysicsObject = new Phys(NerfCorev2.PhysicsSystem.Core.CreateRectangle((_Size - (Vector2.UnitX * 4)) * 0.01f, _Position * 0.01f));
+            _PhysicsObject.PhysicsFixture.Body.BodyType = BodyType.Dynamic;
+            _PhysicsObject.PhysicsFixture.Body.Mass = 0.5f;
+            _PhysicsObject.PhysicsFixture.Body.Restitution = 0.2f;
+            _PhysicsObject.PhysicsFixture.Body.Friction = 0.1f;
+            _PhysicsObject.PhysicsFixture.Body.AngularDamping = 1000;
+            _PhysicsObject.PhysicsFixture.Body.AngularVelocity = 0;
+            _PhysicsObject.PhysicsFixture.Body.Rotation = 0;
+            _PhysicsObject.PhysicsFixture.Body.FixedRotation = true;
         }
 
         public virtual void Draw()
         {
             if (!_Visible) return;
-            Game.SpriteBatch.Draw(_Texture, _Position, _CurrentDrawnRectangle, _Colour);
+            Game.SpriteBatch.Draw(_Texture, _Position - (_Size * 0.5f), _CurrentDrawnRectangle, _Colour);
         }
 
         public virtual void Update()
         {
-            Vector2 appliedVelocity = Vector2.Zero;
-            _Velocity += _Gravity;
-            _Velocity *= distanceToObstruction(_Velocity);
-            _Position += appliedVelocity;
+            _Position = _PhysicsObject.PhysicsFixture.Body.Position * 100.0f;
+
+
         }
 
-        private float distanceToObstruction(Vector2 direction)
-        {
-            int physicsStep = 0;
-            while (physicsStep < MAX_PHYSICS_STEPS)
-            {
-                Block blockBelow = _CurrentLevel.BlockAtGameCoordinates(_Position + (direction / (physicsStep + 1)));
-                if (blockBelow == null)
-                {
-                    break;
-                }
-                physicsStep++;
-            }
-            return 1.0f / (physicsStep + 1);
-        }
 
         private void SetAnimationFrame(int x, int y)
         {

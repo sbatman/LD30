@@ -102,8 +102,8 @@
     <Compile Include="Game.cs" />
     <Compile Include="Logic\Block.cs" />
     <Compile Include="Logic\Character.cs" />
-    <Compile Include="Logic\Input.cs" />
     <Compile Include="Logic\Level.cs" />
+    <Compile Include="Logic\Phys.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
