@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using LD30.Logic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -8,7 +10,11 @@ namespace LD30
     public class GameCore : Game
     {
         private GraphicsDeviceManager _Graphics;
-        private SpriteBatch _SpriteBatch;
+        public static SpriteBatch SpriteBatch;
+        private Level _CurrentLevel;
+        private readonly Dictionary<string, Logic.Block.BlockType> _BlockTypes = new Dictionary<string, Block.BlockType>();
+
+
 
         public GameCore()
             : base()
@@ -19,7 +25,14 @@ namespace LD30
 
         protected override void LoadContent()
         {
-            _SpriteBatch = new SpriteBatch(GraphicsDevice);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            _BlockTypes.Add("Main", new Block.BlockType() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
+
+            _CurrentLevel = new Level(Vector2.One * 10);
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(0, 0));
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(2, 0));
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(1, 3));
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(4, 4));
         }
 
         protected override void UnloadContent()
@@ -29,11 +42,12 @@ namespace LD30
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-                Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Input.IsPressed_Back())
             {
                 Exit();
             }
+
+            if (_CurrentLevel != null) _CurrentLevel.Update();
 
             base.Update(gameTime);
         }
@@ -41,6 +55,8 @@ namespace LD30
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            if (_CurrentLevel != null) _CurrentLevel.Draw();
 
             base.Draw(gameTime);
         }

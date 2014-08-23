@@ -118,9 +118,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.XInput.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameCore.cs" />
+    <Compile Include="Logic\Block.cs" />
+    <Compile Include="Logic\Input.cs" />
+    <Compile Include="Logic\Level.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
