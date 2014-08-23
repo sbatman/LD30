@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using LD30.Logic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -8,7 +9,8 @@ namespace LD30
     public class GameCore : Game
     {
         private GraphicsDeviceManager _Graphics;
-        private SpriteBatch _SpriteBatch;
+        public static SpriteBatch SpriteBatch;
+        private Level _CurrentLevel;
 
         public GameCore()
             : base()
@@ -19,7 +21,7 @@ namespace LD30
 
         protected override void LoadContent()
         {
-            _SpriteBatch = new SpriteBatch(GraphicsDevice);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
         protected override void UnloadContent()
@@ -29,8 +31,7 @@ namespace LD30
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-                Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Logic.Input.IsPressed_Back())
             {
                 Exit();
             }
