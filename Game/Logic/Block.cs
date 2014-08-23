@@ -35,7 +35,7 @@ namespace LD30.Logic
             _Size = type.Size;
             _PhysicsObject = new Phys(NerfCorev2.PhysicsSystem.Core.CreateRectangle(_Size * 0.01f, _Position * 0.01f));
             _PhysicsObject.PhysicsFixture.Body.BodyType = BodyType.Static;
-
+            _PhysicsObject.PhysicsFixture.UserData = this;
 
         }
 

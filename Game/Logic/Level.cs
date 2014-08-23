@@ -17,6 +17,7 @@ namespace LD30.Logic
         private readonly List<Logic.Character> _ActiveCharacters = new List<Character>();
         private Vector2 _Size;
         private Phys LevelWallLeft;
+        private Phys LevelWallRight;
 
         public Level(Vector2 size)
         {
@@ -25,6 +26,9 @@ namespace LD30.Logic
 
             LevelWallLeft = new Phys(Core.CreateRectangle(new Vector2(32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER) * 0.01f, new Vector2(-32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f));
             LevelWallLeft.PhysicsFixture.Body.BodyType = BodyType.Static;
+
+            LevelWallRight = new Phys(Core.CreateRectangle(new Vector2(32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER) * 0.01f, new Vector2(_Size.X * Block.BLOCK_SIZE_MULTIPLIER, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f));
+            LevelWallRight.PhysicsFixture.Body.BodyType = BodyType.Static;
         }
 
         public virtual void Draw()

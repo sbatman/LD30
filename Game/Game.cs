@@ -10,6 +10,8 @@ namespace LD30
 {
     public class Game : GameCore
     {
+        //Controls
+        public const int GAME_CONTROL_LOCK = 10;
 
         //game
         private Level _CurrentLevel;
@@ -38,12 +40,18 @@ namespace LD30
             //Sort out blocks
             _BlockTypes.Add("Main", new Block.BlockType() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
 
-            _CurrentLevel = new Level(Vector2.One * 10);
+            _CurrentLevel = new Level(Vector2.One * 16);
             _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(0, 4));
             _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(1, 3));
             _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(2, 3));
             _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(3, 3));
             _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(4, 4));
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(5, 4));
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(6, 5));
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(7, 5));
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(8, 6));
+            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(9, 6));
+
 
             //Sort out characters
             ContentCharacterTexture = Content.Load<Texture2D>("Graphics/Characters/Main");
