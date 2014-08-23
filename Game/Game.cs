@@ -14,7 +14,7 @@ namespace LD30
         public const int GAME_CONTROL_LOCK = 10;
 
         //game
-        private Level _CurrentLevel;
+        internal static Level PlayerLevel;
 
         //content
         public static Texture2D ContentCharacterTexture;
@@ -40,24 +40,24 @@ namespace LD30
             //Sort out blocks
             _BlockTypes.Add("Main", new Block.BlockType() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
 
-            _CurrentLevel = new Level(Vector2.One * 16);
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(0, 4));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(1, 3));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(2, 3));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(3, 3));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(4, 4));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(5, 4));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(6, 5));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(7, 5));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(8, 6));
-            _CurrentLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(9, 6));
+            PlayerLevel = new Level(Vector2.One * 16);
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(0, 4));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(1, 3));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(2, 3));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(3, 3));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(4, 4));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(5, 4));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(6, 5));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(7, 5));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(8, 6));
+            PlayerLevel.PlaceBlock(_BlockTypes["Main"], new Vector2(9, 6));
 
 
             //Sort out characters
             ContentCharacterTexture = Content.Load<Texture2D>("Graphics/Characters/Main");
 
             testcharacter = new Character(ContentCharacterTexture);
-            _CurrentLevel.AddCharacterToLevel(testcharacter);
+            PlayerLevel.SetActiveCharacter(testcharacter);
         }
 
         protected override void CorePostLoadContent()
@@ -67,12 +67,12 @@ namespace LD30
 
         protected override void CoreUpdate()
         {
-            if (_CurrentLevel != null) _CurrentLevel.Update();
+            if (PlayerLevel != null) PlayerLevel.Update();
         }
 
         protected override void CoreDraw()
         {
-            if (_CurrentLevel != null) _CurrentLevel.Draw();
+            if (PlayerLevel != null) PlayerLevel.Draw();
         }
 
         protected override void CoreResChange()

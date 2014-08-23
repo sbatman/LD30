@@ -104,6 +104,12 @@
     <Compile Include="Logic\Character.cs" />
     <Compile Include="Logic\Level.cs" />
     <Compile Include="Logic\Phys.cs" />
+    <Compile Include="Multiplayer\Client.cs" />
+    <Compile Include="Multiplayer\DataObjects\Player.cs" />
+    <Compile Include="Multiplayer\Ghosts\Base.cs" />
+    <Compile Include="Multiplayer\Ghosts\Player.cs" />
+    <Compile Include="Multiplayer\Host.cs" />
+    <Compile Include="Multiplayer\Manager.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

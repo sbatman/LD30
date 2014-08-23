@@ -16,8 +16,8 @@ namespace LD30.Logic
 {
     internal class Character
     {
-        private const int FRAME_HEIGHT = 36;
-        private const int FRAME_WIDTH = 32;
+        public const int FRAME_HEIGHT = 36;
+        public const int FRAME_WIDTH = 32;
         private const int MAX_PHYSICS_STEPS = 4;
 
         private static Vector2 _Gravity = new Vector2(0, 0.1f);
@@ -60,7 +60,7 @@ namespace LD30.Logic
         {
             _Texture = texture;
             _Size = new Vector2(FRAME_WIDTH, FRAME_HEIGHT);
-            SetAnimationFrame(1, 2);
+            _CurrentDrawnRectangle = SetAnimationFrame(1, 2);
             _Visible = true;
             _PhysicsObject = new Phys(Core.CreateRectangle((_Size - (Vector2.UnitX * 4) - (Vector2.UnitY * 2)) * 0.01f, _Position * 0.01f));
             _PhysicsObject.PhysicsFixture.Body.BodyType = BodyType.Dynamic;
@@ -148,9 +148,9 @@ namespace LD30.Logic
         }
 
 
-        private void SetAnimationFrame(int x, int y)
+        public static Rect SetAnimationFrame(int x, int y)
         {
-            _CurrentDrawnRectangle = new Rect(x * FRAME_WIDTH, y * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+            return new Rect(x * FRAME_WIDTH, y * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
         }
 
         public virtual void SetLevel(Level currentLevel)

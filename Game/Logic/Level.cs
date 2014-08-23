@@ -14,10 +14,12 @@ namespace LD30.Logic
     internal class Level
     {
         private readonly Block[,] _BlockData;
-        private readonly List<Logic.Character> _ActiveCharacters = new List<Character>();
+        private Logic.Character _ActiveCharacter;
         private Vector2 _Size;
         private Phys LevelWallLeft;
         private Phys LevelWallRight;
+
+        private readonly object _LockingObject = new object();
 
         public Level(Vector2 size)
         {
@@ -42,10 +44,9 @@ namespace LD30.Logic
                     _BlockData[x, y].Draw();
                 }
             }
-            foreach (Character character in _ActiveCharacters)
-            {
-                character.Draw();
-            }
+
+            _ActiveCharacter.Draw();
+
             GameCore.SpriteBatch.End();
         }
 
@@ -59,11 +60,10 @@ namespace LD30.Logic
                     _BlockData[x, y].Update();
                 }
             }
-            foreach (Character character in _ActiveCharacters)
-            {
-                character.Update();
-                GameCore.PrimaryCamera.Position = character.Position - (GameCore.ScreenSize * 0.5f);
-            }
+
+            _ActiveCharacter.Update();
+            GameCore.PrimaryCamera.Position = _ActiveCharacter.Position - (GameCore.ScreenSize * 0.5f);
+
         }
 
         public virtual void PlaceBlock(Block.BlockType type, Vector2 position)
@@ -76,10 +76,18 @@ namespace LD30.Logic
             _BlockData[x, y] = new Block(type, position * Block.BLOCK_SIZE_MULTIPLIER);
         }
 
-        public virtual void AddCharacterToLevel(Character character)
+        public virtual void SetActiveCharacter(Character character)
         {
-            _ActiveCharacters.Add(character);
-            character.SetLevel(this);
+            lock (_LockingObject)
+            {
+                _ActiveCharacter = character;
+                character.SetLevel(this);
+            }
+        }
+
+        public virtual Character GetActiveCharacter()
+        {
+            lock (_LockingObject) return _ActiveCharacter;
         }
 
         public virtual Block BlockAtGC(Vector2 position)
