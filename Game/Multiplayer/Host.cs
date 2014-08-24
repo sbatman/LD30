@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using InsaneDev.Networking;
@@ -9,9 +10,13 @@ namespace LD30.Multiplayer
 {
     class Host : Base
     {
+        public static DateTime _LastShift = DateTime.Now;
+        public static TimeSpan _ShiftInterval = new TimeSpan(0, 0, 0, 1);
         private static long _NextObjectID = 0;
         private static readonly object _IDLock = new object();
         private static readonly List<ConnectedClient> _ConnectedClients = new List<ConnectedClient>();
+        private static ConnectedClient _GameHost;
+        private static bool _GameHostConnected = false;
         internal Host()
         {
             Init(new IPEndPoint(IPAddress.Any, 3456), typeof(ConnectedClient));
@@ -34,13 +39,45 @@ namespace LD30.Multiplayer
             }
         }
 
+        public virtual void Update()
+        {
+            if (_GameHostConnected && _GameHost == null)
+            {
+                //game host disconnected, time to shutdown
+                ShutDown();
+            }
+            if (DateTime.Now - _LastShift > _ShiftInterval)
+            {
+                lock (_ConnectedClients)
+                {
+                    Packet shiftRightPacket = new Packet(Manager.PID_WORLDSHIFTRIGHT);
+                    shiftRightPacket.AddInt(_ConnectedClients.Count);
+                    SendToAll(shiftRightPacket);
+                    _LastShift = DateTime.Now;
+                }
+
+
+            }
+        }
+
+        public virtual void ShutDown()
+        {
+            Manager._Server = null;
+            StopListening();
+            Dipose();
+        }
+
         class ConnectedClient : ClientConnection
         {
             public int WorldOffset = -1;
             public ConnectedClient(TcpClient client)
                 : base(client)
             {
-
+                if (!_GameHostConnected)
+                {
+                    _GameHost = this;
+                    _GameHostConnected = true;
+                }
             }
 
             protected override void OnConnect()
@@ -57,6 +94,10 @@ namespace LD30.Multiplayer
                 Core.HookModule("Console", "AddStringToConsole", new object[] { "Client Disconnected" });
                 lock (_ConnectedClients) _ConnectedClients.Remove(this);
                 SendUpdatedWorldPositions();
+                if (this == _GameHost)
+                {
+                    _GameHost = null;
+                }
             }
 
             protected override void ClientUpdateLogic()

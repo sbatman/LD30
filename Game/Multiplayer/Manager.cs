@@ -18,6 +18,7 @@ namespace LD30.Multiplayer
         public const int PID_REQUESTPLAYERDETAILS = 402;
         public const int PID_SENDWORLDPOSITION = 500;
         public const int PID_WORLDDATAFULL = 600;
+        public const int PID_WORLDSHIFTRIGHT = 700;
 
         public enum MuliplayerModes
         {
@@ -38,6 +39,7 @@ namespace LD30.Multiplayer
         internal static void Update()
         {
             if (_Client != null) _Client.Update();
+            if (_Server != null) _Server.Update();
         }
 
         internal static void EnterMultiplayer(string ip, MuliplayerModes mode)
@@ -120,10 +122,12 @@ namespace LD30.Multiplayer
             {
                 _Server.StopListening();
                 _Server.Dipose();
+                _Server = null;
             }
             if (_Client != null)
             {
                 DisposeClient();
+                _Client = null;
             }
         }
     }

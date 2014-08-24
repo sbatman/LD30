@@ -132,6 +132,9 @@ namespace LD30.Multiplayer
                             }
                             break;
 
+                        case Manager.PID_WORLDSHIFTRIGHT:
+                            break;
+
                         case Manager.PID_SENDWORLDPOSITION:
                             _MyWorldPosition = (int)objects[0];
                             Game.PlayerLevel.OffsetWorld(_MyWorldPosition);
@@ -185,8 +188,7 @@ namespace LD30.Multiplayer
             }
             else
             {
-                character = new Ghosts.Character(Game.ContentCharacterTexture);
-                character.ID = targetID;
+                character = new Ghosts.Character(Game.ContentCharacterTexture) {ID = targetID};
                 Manager.RegisterObject(character);
                 _ExternalObjects.Add(targetID, character);
             }
