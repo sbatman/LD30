@@ -11,20 +11,18 @@ namespace LD30
 {
     public class Game : GameCore
     {
-        enum BlockTypes
-        {
-            Main
-        }
+
 
         //Controls
-        public const int GAME_CONTROL_LOCK = 10;
+        internal const int GAME_CONTROL_LOCK = 10;
+        internal const int GAMELEVELSIZE = 16;
 
         //game
         internal static Level PlayerLevel;
 
         //content
-        public static Texture2D ContentCharacterTexture;
-        private readonly Dictionary<BlockTypes, Block.BlockType> _BlockTypes = new Dictionary<BlockTypes, Block.BlockType>();
+        internal static Texture2D ContentCharacterTexture;
+        internal static readonly Dictionary<Block.BlockTypes, Block.BlockData> BlockData = new Dictionary<Block.BlockTypes, Block.BlockData>();
 
         //test
         private Character testcharacter;
@@ -44,25 +42,25 @@ namespace LD30
             Core.LoadContent(Content, GraphicsDevice);
             Core.Gravity.Value = new Vector2(0, 9);
             //Sort out blocks
-            _BlockTypes.Add(BlockTypes.Main, new Block.BlockType() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
+            BlockData.Add(Block.BlockTypes.Main, new Block.BlockData() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
 
-            PlayerLevel = new Level(Vector2.One * 16);
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(0, 4));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(1, 3));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(2, 3));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(3, 3));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(4, 4));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(5, 4));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(6, 5));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(7, 5));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(8, 6));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(9, 6));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(10, 6));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(11, 6));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(12, 5));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(13, 5));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(14, 4));
-            PlayerLevel.PlaceBlock(_BlockTypes[BlockTypes.Main], new Vector2(15, 3));
+            PlayerLevel = new Level(Vector2.One * GAMELEVELSIZE);
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(0, 4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(1, 3));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(2, 3));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(3, 3));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(4, 4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(5, 4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(6, 5));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(7, 5));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(8, 6));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(9, 6));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(10, 6));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(11, 6));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(12, 5));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(13, 5));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(14, 4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(15, 3));
 
 
             //Sort out characters

@@ -24,7 +24,7 @@ namespace LD30.Multiplayer.Ghosts
 
         public override void Draw()
         {
-            GameCore.SpriteBatch.Draw(_Texture, _Position - (_Size * 0.5f), _CurrentDrawnRectangle, _Colour);
+            GameCore.SpriteBatch.Draw(_Texture, _Position - (Vector2.UnitY * (_Size.Y * 0.5f)) - (Vector2.UnitX * _Size.X), _CurrentDrawnRectangle, _Colour);
         }
 
         public void SetPosition(float x, float y)

@@ -10,11 +10,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LD30.Logic
 {
-    internal class Block
+    internal class Block : IDisposable
     {
+        internal enum BlockTypes
+        {
+            Main
+        }
+
         public const int BLOCK_SIZE_MULTIPLIER = 32;
 
-        public struct BlockType
+        public struct BlockData
         {
             public Texture2D Texture;
             public Color Colour;
@@ -27,14 +32,21 @@ namespace LD30.Logic
         private Vector2 _Size;
         private Phys _PhysicsObject;
         private bool _HasPhysics;
+        private BlockTypes _BlockType;
 
-
-        public Block(BlockType type, Vector2 position, bool physics = true)
+        public BlockTypes BlockType
         {
-            _BlockTexture = type.Texture;
+            get { return _BlockType; }
+        }
+
+        public Block(BlockTypes type, Vector2 position, bool physics = true)
+        {
+            BlockData data = Game.BlockData[type];
+            _BlockType = type;
+            _BlockTexture = data.Texture;
             _Position = position;
-            _Colour = type.Colour;
-            _Size = type.Size;
+            _Colour = data.Colour;
+            _Size = data.Size;
             _HasPhysics = physics;
             if (_HasPhysics)
             {
@@ -59,6 +71,16 @@ namespace LD30.Logic
         public virtual void Update()
         {
 
+        }
+
+        public void Dispose()
+        {
+            _BlockTexture = null;
+            if (_HasPhysics)
+            {
+                NerfCorev2.PhysicsSystem.Core.RemoveFixture(_PhysicsObject.PhysicsFixture);
+                _PhysicsObject = null;
+            }
         }
     }
 }

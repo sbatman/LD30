@@ -72,6 +72,7 @@ namespace LD30.Multiplayer
                             case Manager.PID_ANNOUNCEEXISTENCE:
                             case Manager.PID_ANNOUNCEPLAYERDETAILS:
                             case Manager.PID_SENDCHARACTERPHYSICS:
+                            case Manager.PID_WORLDDATAFULL:
                                 Manager._Server.SendToAll(p);
                                 break;
                             case Manager.PID_IDREQUEST:

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using Bounce.Multiplayer.Ghosts;
 using InsaneDev.Networking;
-using LD30.Logic;
 using LD30.Multiplayer.DataObjects;
+using LD30.Multiplayer.Ghosts;
 using Microsoft.Xna.Framework;
 using NerfCorev2.Plugins;
 using Base = InsaneDev.Networking.Client.Base;
+using Character = LD30.Logic.Character;
 
 namespace LD30.Multiplayer
 {
@@ -96,7 +97,7 @@ namespace LD30.Multiplayer
                         case Manager.PID_ANNOUNCEPLAYERDETAILS:
                             long id = (long)objects[0];
                             string name = Encoding.UTF8.GetString((byte[])objects[1]);
-                            int worldOffset = (int) objects[0];
+                            int worldOffset = (int)objects[2];
                             lock (_KnownPlayers)
                             {
                                 Player player = _KnownPlayers.FirstOrDefault(a => a.ID == id);
@@ -107,7 +108,26 @@ namespace LD30.Multiplayer
                                 }
                                 else
                                 {
-                                    _KnownPlayers.Add(new Player(id, name){WorldOffset = worldOffset});
+                                    _KnownPlayers.Add(new Player(id, name) { WorldOffset = worldOffset });
+                                }
+                            }
+                            break;
+
+                        case Manager.PID_WORLDDATAFULL:
+                            long playerid = (long)objects[objects.Length - 1];
+                            if (playerid == _MyPlayerID) continue;
+                            lock (_KnownPlayers)
+                            {
+                                Player player = _KnownPlayers.FirstOrDefault(a => a.ID == playerid);
+                                if (player != null)
+                                {
+                                    if (player.Level == null)
+                                    {
+                                        player.Level = new Level();
+                                        Manager.RegisterObject(player.Level);
+                                    }
+                                    player.Level.BuildFromPacket(packet);
+
                                 }
                             }
                             break;
@@ -132,6 +152,13 @@ namespace LD30.Multiplayer
             }
         }
 
+        private void SendWorldData()
+        {
+            Packet p = Game.PlayerLevel.ToPacket();
+            p.AddLong(_MyPlayerID);
+            SendPacket(p);
+        }
+
         private void SendPlayerDetails()
         {
             Packet p = new Packet(Manager.PID_ANNOUNCEPLAYERDETAILS);
@@ -141,6 +168,8 @@ namespace LD30.Multiplayer
             p.AddInt(_MyWorldPosition);
             SendPacket(p);
             _LastPlayerDetailsAnnounce = DateTime.Now;
+
+            SendWorldData();
 
         }
 
