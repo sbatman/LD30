@@ -75,7 +75,7 @@ namespace LD30.Logic
                         _BlockData[x, y].SetPosition(start + new Vector2(x * Block.BLOCK_SIZE_MULTIPLIER, y * Block.BLOCK_SIZE_MULTIPLIER));
                     }
                 }
-                _ActiveCharacter.Position += difference * (Vector2.UnitX * i * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
+                _ActiveCharacter.Position += difference * (Vector2.UnitX * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
             }
         }
 
