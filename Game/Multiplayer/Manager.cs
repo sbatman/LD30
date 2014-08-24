@@ -19,6 +19,7 @@ namespace LD30.Multiplayer
         public const int PID_SENDWORLDPOSITION = 500;
         public const int PID_WORLDDATAFULL = 600;
         public const int PID_WORLDSHIFTRIGHT = 700;
+        public const int PID_WORLDSHIFTLEFT = 701;
 
         public enum MuliplayerModes
         {

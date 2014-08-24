@@ -121,7 +121,9 @@ namespace LD30.Logic
                 if (x >= _Size.X || x < 0) throw new ArgumentOutOfRangeException("position");
                 if (y >= _Size.Y || y < 0) throw new ArgumentOutOfRangeException("position");
 
-                _BlockData[x, y] = new Block(type, position * Block.BLOCK_SIZE_MULTIPLIER);
+                Vector2 start = Vector2.Zero + (Vector2.UnitX * _WorldOffset * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
+
+                _BlockData[x, y] = new Block(type, start + (position * Block.BLOCK_SIZE_MULTIPLIER));
             }
         }
 
@@ -186,7 +188,7 @@ namespace LD30.Logic
                 {
                     if (_BlockData[0, y] != null)
                     {
-                        _BlockData[0, y].Dispose();
+
                         _BlockData[0, y] = null;
                     }
                 }
@@ -216,7 +218,6 @@ namespace LD30.Logic
                 {
                     if (_BlockData[(int)_Size.X - 1, y] != null)
                     {
-                        _BlockData[(int)_Size.X - 1, y].Dispose();
                         _BlockData[(int)_Size.X - 1, y] = null;
                     }
                 }

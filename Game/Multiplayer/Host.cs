@@ -11,7 +11,7 @@ namespace LD30.Multiplayer
     class Host : Base
     {
         public static DateTime _LastShift = DateTime.Now;
-        public static TimeSpan _ShiftInterval = new TimeSpan(0, 0, 0, 1);
+        public static TimeSpan _ShiftInterval = new TimeSpan(0, 0, 0, 3);
         private static long _NextObjectID = 0;
         private static readonly object _IDLock = new object();
         private static readonly List<ConnectedClient> _ConnectedClients = new List<ConnectedClient>();
@@ -48,13 +48,17 @@ namespace LD30.Multiplayer
             }
             if (DateTime.Now - _LastShift > _ShiftInterval)
             {
-                lock (_ConnectedClients)
+                if (_ConnectedClients.Count > 1)
                 {
-                    Packet shiftRightPacket = new Packet(Manager.PID_WORLDSHIFTRIGHT);
-                    shiftRightPacket.AddInt(_ConnectedClients.Count);
-                    SendToAll(shiftRightPacket);
-                    _LastShift = DateTime.Now;
+                    lock (_ConnectedClients)
+                    {
+                        Packet shiftRightPacket = new Packet(Manager.PID_WORLDSHIFTLEFT);
+                        shiftRightPacket.AddInt(_ConnectedClients.Count);
+                        SendToAll(shiftRightPacket);
+                    }
                 }
+                _LastShift = DateTime.Now;
+
 
 
             }

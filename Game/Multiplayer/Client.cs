@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using Bounce.Multiplayer.Ghosts;
 using InsaneDev.Networking;
+using LD30.Logic;
 using LD30.Multiplayer.DataObjects;
-using LD30.Multiplayer.Ghosts;
 using Microsoft.Xna.Framework;
 using NerfCorev2.Plugins;
 using Base = InsaneDev.Networking.Client.Base;
 using Character = LD30.Logic.Character;
+using Level = LD30.Multiplayer.Ghosts.Level;
 
 namespace LD30.Multiplayer
 {
@@ -116,6 +117,7 @@ namespace LD30.Multiplayer
                         case Manager.PID_WORLDDATAFULL:
                             long playerid = (long)objects[objects.Length - 1];
                             if (playerid == _MyPlayerID) continue;
+                            if (playerid == -1) continue;
                             lock (_KnownPlayers)
                             {
                                 Player player = _KnownPlayers.FirstOrDefault(a => a.ID == playerid);
@@ -134,6 +136,19 @@ namespace LD30.Multiplayer
 
                         case Manager.PID_WORLDSHIFTRIGHT:
                             Game.PlayerLevel.ShiftRight();
+                            break;
+                        case Manager.PID_WORLDSHIFTLEFT:
+                            Game.PlayerLevel.ShiftLeft();
+                            int players = (int)objects[0];
+                            int rightPlayer = (_MyWorldPosition + 1) % players;
+                            Block.BlockTypes[] newCollumn = GetKnownPlayerByID(rightPlayer).Level.GetCollumn(0);
+
+                            for (int y = 0; y < Game.GAMELEVELSIZE; y++)
+                            {
+                                if (newCollumn[y] == Block.BlockTypes.Air) continue;
+                                Game.PlayerLevel.PlaceBlock(newCollumn[y], new Vector2(Game.GAMELEVELSIZE - 1, y));
+                            }
+                            SendWorldData();
                             break;
 
                         case Manager.PID_SENDWORLDPOSITION:
@@ -176,6 +191,11 @@ namespace LD30.Multiplayer
 
             SendWorldData();
 
+        }
+
+        public Player GetKnownPlayerByID(long id)
+        {
+            return _KnownPlayers.FirstOrDefault(a => a.ID == id);
         }
 
         private void HandlePacket_SendCharacterPhysics(Packet p)

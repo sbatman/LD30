@@ -66,5 +66,21 @@ namespace LD30.Multiplayer.Ghosts
                 }
             }
         }
+
+        public virtual Block.BlockTypes[] GetCollumn(int index)
+        {
+            Block.BlockTypes[] returnData = new Block.BlockTypes[Game.GAMELEVELSIZE];
+            for (int y = 0; y < Game.GAMELEVELSIZE; y++)
+            {
+                if (_BlockData[index, y] == null)
+                {
+                    returnData[y] = Block.BlockTypes.Air;
+                }else{
+                returnData[y] = _BlockData[index, y].BlockType;
+                }
+
+            }
+            return returnData;
+        }
     }
 }

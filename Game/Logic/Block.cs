@@ -14,6 +14,7 @@ namespace LD30.Logic
     {
         internal enum BlockTypes
         {
+            Air,
             Main
         }
 
