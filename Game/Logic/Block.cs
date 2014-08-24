@@ -34,6 +34,8 @@ namespace LD30.Logic
         private bool _HasPhysics;
         private BlockTypes _BlockType;
 
+        private bool _Disposed;
+
         public BlockTypes BlockType
         {
             get { return _BlockType; }
@@ -59,13 +61,19 @@ namespace LD30.Logic
 
         public virtual void SetPosition(Vector2 newPosition)
         {
-            _Position = newPosition;
-            if (_HasPhysics) _PhysicsObject.PhysicsFixture.Body.Position = newPosition * 0.01f;
+            lock (this)
+            {
+                _Position = newPosition;
+                if (_HasPhysics) _PhysicsObject.PhysicsFixture.Body.Position = newPosition*0.01f;
+            }
         }
 
         public virtual void Draw()
         {
-            Game.SpriteBatch.Draw(_BlockTexture, _Position - (_Size * 0.5f), _Colour);
+            lock (this)
+            {
+                Game.SpriteBatch.Draw(_BlockTexture, _Position - (_Size*0.5f), _Colour);
+            }
         }
 
         public virtual void Update()
@@ -75,12 +83,22 @@ namespace LD30.Logic
 
         public void Dispose()
         {
-            _BlockTexture = null;
-            if (_HasPhysics)
+            lock (this)
             {
-                NerfCorev2.PhysicsSystem.Core.RemoveFixture(_PhysicsObject.PhysicsFixture);
-                _PhysicsObject = null;
+                _BlockTexture = null;
+                if (_HasPhysics)
+                {
+                    NerfCorev2.PhysicsSystem.Core.RemoveFixture(_PhysicsObject.PhysicsFixture);
+                    _PhysicsObject = null;
+                    _HasPhysics = false;
+                }
+                _Disposed = true;
             }
+        }
+
+        public bool IsDisposed()
+        {
+            return _Disposed;
         }
     }
 }

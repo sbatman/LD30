@@ -133,6 +133,7 @@ namespace LD30.Multiplayer
                             break;
 
                         case Manager.PID_WORLDSHIFTRIGHT:
+                            Game.PlayerLevel.ShiftRight();
                             break;
 
                         case Manager.PID_SENDWORLDPOSITION:
@@ -157,6 +158,7 @@ namespace LD30.Multiplayer
 
         private void SendWorldData()
         {
+            if (_MyPlayerID == -1) return;
             Packet p = Game.PlayerLevel.ToPacket();
             p.AddLong(_MyPlayerID);
             SendPacket(p);
@@ -188,7 +190,7 @@ namespace LD30.Multiplayer
             }
             else
             {
-                character = new Ghosts.Character(Game.ContentCharacterTexture) {ID = targetID};
+                character = new Ghosts.Character(Game.ContentCharacterTexture) { ID = targetID };
                 Manager.RegisterObject(character);
                 _ExternalObjects.Add(targetID, character);
             }
