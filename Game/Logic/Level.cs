@@ -21,6 +21,9 @@ namespace LD30.Logic
         private Phys LevelWallRight;
         private int _WorldOffset;
 
+        private Vector2 _LevelTopLeft = Vector2.Zero;
+        
+
         private readonly object _LockingObject = new object();
 
         public Vector2 Size
@@ -59,6 +62,10 @@ namespace LD30.Logic
                 }
 
                 _ActiveCharacter.Draw();
+
+                Game.SpriteBatch.Draw(Game.LevelEdgeTexture, new Rect(_LevelTopLeft.X - 16, -1000, 4, 2000), Color.White);
+                Game.SpriteBatch.Draw(Game.LevelEdgeTexture, new Rect(_LevelTopLeft.X + (_Size.X * Block.BLOCK_SIZE_MULTIPLIER) - 16, -1000, 4, 2000), Color.White);
+
             }
 
         }
@@ -68,10 +75,10 @@ namespace LD30.Logic
             {
                 int difference = i - _WorldOffset;
                 _WorldOffset = i;
-                Vector2 start = Vector2.Zero + (Vector2.UnitX * i * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
+                _LevelTopLeft = Vector2.Zero + (Vector2.UnitX * i * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
 
-                LevelWallLeft.PhysicsFixture.Body.Position = new Vector2(start.X - 32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
-                LevelWallRight.PhysicsFixture.Body.Position = new Vector2(start.X + (_Size.X * Block.BLOCK_SIZE_MULTIPLIER), _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
+                LevelWallLeft.PhysicsFixture.Body.Position = new Vector2(_LevelTopLeft.X - 32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
+                LevelWallRight.PhysicsFixture.Body.Position = new Vector2(_LevelTopLeft.X + (_Size.X * Block.BLOCK_SIZE_MULTIPLIER), _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
 
 
                 for (int x = 0; x < _Size.X; x++)
@@ -79,7 +86,7 @@ namespace LD30.Logic
                     for (int y = 0; y < _Size.Y; y++)
                     {
                         if (_BlockData[x, y] == null) continue;
-                        _BlockData[x, y].SetPosition(start + new Vector2(x * Block.BLOCK_SIZE_MULTIPLIER, y * Block.BLOCK_SIZE_MULTIPLIER));
+                        _BlockData[x, y].SetPosition(_LevelTopLeft + new Vector2(x * Block.BLOCK_SIZE_MULTIPLIER, y * Block.BLOCK_SIZE_MULTIPLIER));
                     }
                 }
                 if (difference != 0)
@@ -109,6 +116,11 @@ namespace LD30.Logic
 
                 _ActiveCharacter.Update();
                 GameCore.PrimaryCamera.Position = _ActiveCharacter.Position - (GameCore.ScreenSize * 0.5f);
+
+                if (_ActiveCharacter.Position.Y > 1000)
+                {
+                    _ActiveCharacter.Position = new Vector2(_ActiveCharacter.Position.X, 0);
+                }
             }
         }
 
@@ -121,9 +133,9 @@ namespace LD30.Logic
                 if (x >= _Size.X || x < 0) throw new ArgumentOutOfRangeException("position");
                 if (y >= _Size.Y || y < 0) throw new ArgumentOutOfRangeException("position");
 
-                Vector2 start = Vector2.Zero + (Vector2.UnitX * _WorldOffset * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
+                
 
-                _BlockData[x, y] = new Block(type, start + (position * Block.BLOCK_SIZE_MULTIPLIER));
+                _BlockData[x, y] = new Block(type, _LevelTopLeft + (position * Block.BLOCK_SIZE_MULTIPLIER));
             }
         }
 

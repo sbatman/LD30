@@ -11,7 +11,7 @@ namespace LD30.Multiplayer
     class Host : Base
     {
         public static DateTime _LastShift = DateTime.Now;
-        public static TimeSpan _ShiftInterval = new TimeSpan(0, 0, 0, 3);
+        public static TimeSpan _ShiftInterval = new TimeSpan(0, 0, 0, 1);
         private static long _NextObjectID = 0;
         private static readonly object _IDLock = new object();
         private static readonly List<ConnectedClient> _ConnectedClients = new List<ConnectedClient>();

@@ -22,6 +22,7 @@ namespace LD30
 
         //content
         internal static Texture2D ContentCharacterTexture;
+        internal static Texture2D LevelEdgeTexture;
         internal static readonly Dictionary<Block.BlockTypes, Block.BlockData> BlockData = new Dictionary<Block.BlockTypes, Block.BlockData>();
 
         //test
@@ -45,26 +46,27 @@ namespace LD30
             BlockData.Add(Block.BlockTypes.Main, new Block.BlockData() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
 
             PlayerLevel = new Level(Vector2.One * GAMELEVELSIZE);
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(0, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(1, 3));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(2, 3));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(3, 3));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(4, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(5, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(6, 5));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(7, 5));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(8, 6));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(9, 6));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(10, 6));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(11, 6));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(12, 5));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(13, 5));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(0,4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(1,4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(2,4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(3,4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(4,4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(5,4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(6,4));
+            
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(8,4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(9,4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(10, 4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(11, 4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(12, 4));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(13, 4));
             PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(14, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(15, 3));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(15, 4));
 
 
             //Sort out characters
             ContentCharacterTexture = Content.Load<Texture2D>("Graphics/Characters/Main");
+            LevelEdgeTexture = Content.Load<Texture2D>("Graphics/Level/Bar");
 
             testcharacter = new Character(ContentCharacterTexture);
             PlayerLevel.SetActiveCharacter(testcharacter);
