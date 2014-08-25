@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bounce.Multiplayer.Ghosts;
 using InsaneDev.Networking;
+using LD30.Logic;
 using LD30.Multiplayer.DataObjects;
-using LD30.Multiplayer.Ghosts;
 using Microsoft.Xna.Framework;
 using NerfCorev2.Plugins;
 using Base = InsaneDev.Networking.Client.Base;
 using Character = LD30.Logic.Character;
+using Level = LD30.Multiplayer.Ghosts.Level;
 
 namespace LD30.Multiplayer
 {
@@ -116,6 +116,7 @@ namespace LD30.Multiplayer
                         case Manager.PID_WORLDDATAFULL:
                             long playerid = (long)objects[objects.Length - 1];
                             if (playerid == _MyPlayerID) continue;
+                            if (playerid == -1) continue;
                             lock (_KnownPlayers)
                             {
                                 Player player = _KnownPlayers.FirstOrDefault(a => a.ID == playerid);
@@ -130,6 +131,33 @@ namespace LD30.Multiplayer
 
                                 }
                             }
+                            break;
+
+                        case Manager.PID_WORLDSHIFTRIGHT:
+                            Game.PlayerLevel.ShiftRight();
+                            int playersA = (int)objects[0];
+                            int rightPlayerA = ((_MyWorldPosition + playersA) - 1) % playersA;
+                            Block.BlockTypes[] newCollumnA = GetKnownPlayerByID(rightPlayerA).Level.GetCollumn(Game.GAMELEVELSIZE-1);
+
+                            for (int y = 0; y < Game.GAMELEVELSIZE; y++)
+                            {
+                                if (newCollumnA[y] == Block.BlockTypes.Air) continue;
+                                Game.PlayerLevel.PlaceBlock(newCollumnA[y], new Vector2(0, y));
+                            }
+                            SendWorldData();
+                            break;
+                        case Manager.PID_WORLDSHIFTLEFT:
+                            Game.PlayerLevel.ShiftLeft();
+                            int players = (int)objects[0];
+                            int rightPlayer = (_MyWorldPosition + 1) % players;
+                            Block.BlockTypes[] newCollumn = GetKnownPlayerByID(rightPlayer).Level.GetCollumn(0);
+
+                            for (int y = 0; y < Game.GAMELEVELSIZE; y++)
+                            {
+                                if (newCollumn[y] == Block.BlockTypes.Air) continue;
+                                Game.PlayerLevel.PlaceBlock(newCollumn[y], new Vector2(Game.GAMELEVELSIZE - 1, y));
+                            }
+                            SendWorldData();
                             break;
 
                         case Manager.PID_SENDWORLDPOSITION:
@@ -154,6 +182,7 @@ namespace LD30.Multiplayer
 
         private void SendWorldData()
         {
+            if (_MyPlayerID == -1) return;
             Packet p = Game.PlayerLevel.ToPacket();
             p.AddLong(_MyPlayerID);
             SendPacket(p);
@@ -173,6 +202,11 @@ namespace LD30.Multiplayer
 
         }
 
+        public Player GetKnownPlayerByID(long id)
+        {
+            return _KnownPlayers.FirstOrDefault(a => a.ID == id);
+        }
+
         private void HandlePacket_SendCharacterPhysics(Packet p)
         {
             object[] data = p.GetObjects();
@@ -185,8 +219,7 @@ namespace LD30.Multiplayer
             }
             else
             {
-                character = new Ghosts.Character(Game.ContentCharacterTexture);
-                character.ID = targetID;
+                character = new Ghosts.Character(Game.ContentCharacterTexture) { ID = targetID };
                 Manager.RegisterObject(character);
                 _ExternalObjects.Add(targetID, character);
             }

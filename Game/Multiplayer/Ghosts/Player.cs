@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NerfCorev2;
-using NerfCorev2.Graphics.Sprites;
 using NerfCorev2.Wrappers;
 
 namespace LD30.Multiplayer.Ghosts

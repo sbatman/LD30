@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Bounce.Multiplayer.Ghosts;
 using InsaneDev.Networking;
 using LD30.Logic;
@@ -65,6 +62,22 @@ namespace LD30.Multiplayer.Ghosts
                     _BlockData[x, y] = null;
                 }
             }
+        }
+
+        public virtual Block.BlockTypes[] GetCollumn(int index)
+        {
+            Block.BlockTypes[] returnData = new Block.BlockTypes[Game.GAMELEVELSIZE];
+            for (int y = 0; y < Game.GAMELEVELSIZE; y++)
+            {
+                if (_BlockData[index, y] == null)
+                {
+                    returnData[y] = Block.BlockTypes.Air;
+                }else{
+                returnData[y] = _BlockData[index, y].BlockType;
+                }
+
+            }
+            return returnData;
         }
     }
 }
