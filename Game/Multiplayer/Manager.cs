@@ -7,7 +7,7 @@ namespace LD30.Multiplayer
 {
     internal static class Manager
     {
-        public const int PID_LOADLEVEl = 100;
+        public const int PID_CHANGEGAMEMODE = 100;
         public const int PID_SENDCHARACTERPHYSICS = 200;
         public const int PID_IDREQUEST = 300;
         public const int PID_IDRESPONCE = 301;
@@ -21,10 +21,10 @@ namespace LD30.Multiplayer
 
         public enum MuliplayerModes
         {
-            GHOST
+            NORMAL
         }
 
-        internal static MuliplayerModes Mode = MuliplayerModes.GHOST;
+        internal static MuliplayerModes Mode = MuliplayerModes.NORMAL;
         internal static Host _Server;
         internal static Client _Client;
         internal static List<Base> _Objects = new List<Base>();
@@ -49,16 +49,6 @@ namespace LD30.Multiplayer
             }
             Mode = mode;
             _Client = new Client(ip, 3456);
-        }
-
-        internal static void LoadLevel(string levelName)
-        {
-            if (_Server != null)
-            {
-                Packet p = new Packet(PID_LOADLEVEl);
-                p.AddBytePacket(Encoding.UTF8.GetBytes(levelName));
-                _Server.SendToAll(p);
-            }
         }
 
         internal static void PostLoadLevel()

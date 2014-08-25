@@ -1,5 +1,6 @@
 ﻿using System;
 using InsaneDev.Networking;
+using LD30.Multiplayer;
 using Microsoft.Xna.Framework;
 using NerfCorev2;
 using NerfCorev2.PhysicsSystem;
@@ -230,7 +231,7 @@ namespace LD30.Logic
         {
             lock (_LockingObject)
             {
-                Packet p = new Packet(Multiplayer.Manager.PID_WORLDDATAFULL);
+                Packet p = new Packet(Manager.PID_WORLDDATAFULL);
                 p.AddInt(_WorldOffset);
                 int i = 0;
                 for (int x = 0; x < _Size.X; x++)

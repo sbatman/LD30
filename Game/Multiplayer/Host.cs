@@ -17,6 +17,7 @@ namespace LD30.Multiplayer
         private static readonly List<ConnectedClient> _ConnectedClients = new List<ConnectedClient>();
         private static ConnectedClient _GameHost;
         private static bool _GameHostConnected = false;
+        private static Game.GameState _CurrentGameState;
         internal Host()
         {
             Init(new IPEndPoint(IPAddress.Any, 3456), typeof(ConnectedClient));
@@ -48,7 +49,7 @@ namespace LD30.Multiplayer
             }
             if (DateTime.Now - _LastShift > _ShiftInterval)
             {
-                if (_ConnectedClients.Count > 1)
+                if (_ConnectedClients.Count > 1 && _CurrentGameState == Game.GameState.Playing)
                 {
                     lock (_ConnectedClients)
                     {
@@ -113,6 +114,10 @@ namespace LD30.Multiplayer
                         object[] objects = p.GetObjects();
                         switch (p.Type)
                         {
+                            case Manager.PID_CHANGEGAMEMODE:
+                                _CurrentGameState = (Game.GameState)objects[0];
+                                Manager._Server.SendToAll(p);
+                                break;
                             case Manager.PID_REQUESTPLAYERDETAILS:
                             case Manager.PID_ANNOUNCEEXISTENCE:
                             case Manager.PID_ANNOUNCEPLAYERDETAILS:

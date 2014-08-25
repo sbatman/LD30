@@ -56,9 +56,8 @@ namespace LD30.Multiplayer
                     object[] objects = packet.GetObjects();
                     switch (packet.Type)
                     {
-                        case Manager.PID_LOADLEVEl:
-                            if (Manager._Server != null) return;
-                            //   Core.SetLevel(Encoding.UTF8.GetString((byte[])packet.GetObjects()[0]));
+                        case Manager.PID_CHANGEGAMEMODE:
+                            Game.ChangeGameMode((Game.GameState)objects[0]);
                             break;
 
                         case Manager.PID_SENDCHARACTERPHYSICS:
@@ -137,7 +136,7 @@ namespace LD30.Multiplayer
                             Game.PlayerLevel.ShiftRight();
                             int playersA = (int)objects[0];
                             int rightPlayerA = ((_MyWorldPosition + playersA) - 1) % playersA;
-                            Block.BlockTypes[] newCollumnA = GetKnownPlayerByID(rightPlayerA).Level.GetCollumn(Game.GAMELEVELSIZE-1);
+                            Block.BlockTypes[] newCollumnA = GetKnownPlayerByID(rightPlayerA).Level.GetCollumn(Game.GAMELEVELSIZE - 1);
 
                             for (int y = 0; y < Game.GAMELEVELSIZE; y++)
                             {

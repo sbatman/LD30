@@ -86,7 +86,7 @@ namespace LD30.Logic
                 _BlockTexture = null;
                 if (_HasPhysics)
                 {
-                    NerfCorev2.PhysicsSystem.Core.RemoveFixture(_PhysicsObject.PhysicsFixture);
+                    Core.RemoveFixture(_PhysicsObject.PhysicsFixture);
                     _PhysicsObject = null;
                     _HasPhysics = false;
                 }
