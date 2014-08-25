@@ -52,7 +52,7 @@ namespace LD30.Multiplayer
                 {
                     lock (_ConnectedClients)
                     {
-                        Packet shiftRightPacket = new Packet(Manager.PID_WORLDSHIFTLEFT);
+                        Packet shiftRightPacket = new Packet(Manager.PID_WORLDSHIFTRIGHT);
                         shiftRightPacket.AddInt(_ConnectedClients.Count);
                         SendToAll(shiftRightPacket);
                     }

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
+using NerfCorev2;
 using NerfCorev2.PhysicsSystem;
 using NerfCorev2.PhysicsSystem.Dynamics;
-using SharpDX.Direct2D1;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace LD30.Logic
@@ -73,7 +70,7 @@ namespace LD30.Logic
         {
             lock (this)
             {
-                Game.SpriteBatch.Draw(_BlockTexture, _Position - (_Size*0.5f), _Colour);
+                GameCore.SpriteBatch.Draw(_BlockTexture, _Position - (_Size*0.5f), _Colour);
             }
         }
 

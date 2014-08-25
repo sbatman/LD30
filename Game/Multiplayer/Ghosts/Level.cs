@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Bounce.Multiplayer.Ghosts;
 using InsaneDev.Networking;
 using LD30.Logic;

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using InsaneDev.Networking;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using NerfCorev2;
 using NerfCorev2.PhysicsSystem;
 using NerfCorev2.PhysicsSystem.Dynamics;
@@ -17,12 +13,12 @@ namespace LD30.Logic
         private readonly Block[,] _BlockData;
         private Character _ActiveCharacter;
         private Vector2 _Size;
-        private Phys LevelWallLeft;
-        private Phys LevelWallRight;
+        private readonly Phys _LevelWallLeft;
+        private readonly Phys _LevelWallRight;
         private int _WorldOffset;
 
         private Vector2 _LevelTopLeft = Vector2.Zero;
-        
+
 
         private readonly object _LockingObject = new object();
 
@@ -36,11 +32,11 @@ namespace LD30.Logic
             _Size = size;
             _BlockData = new Block[(int)_Size.X, (int)_Size.Y];
 
-            LevelWallLeft = new Phys(Core.CreateRectangle(new Vector2(16, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER) * 0.02f, new Vector2(-32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f));
-            LevelWallLeft.PhysicsFixture.Body.BodyType = BodyType.Static;
+            _LevelWallLeft = new Phys(Core.CreateRectangle(new Vector2(16, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER) * 0.02f, new Vector2(-32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f));
+            _LevelWallLeft.PhysicsFixture.Body.BodyType = BodyType.Static;
 
-            LevelWallRight = new Phys(Core.CreateRectangle(new Vector2(16, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER) * 0.02f, new Vector2(_Size.X * Block.BLOCK_SIZE_MULTIPLIER, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f));
-            LevelWallRight.PhysicsFixture.Body.BodyType = BodyType.Static;
+            _LevelWallRight = new Phys(Core.CreateRectangle(new Vector2(16, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER) * 0.02f, new Vector2(_Size.X * Block.BLOCK_SIZE_MULTIPLIER, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f));
+            _LevelWallRight.PhysicsFixture.Body.BodyType = BodyType.Static;
         }
 
         public virtual void Draw()
@@ -63,8 +59,8 @@ namespace LD30.Logic
 
                 _ActiveCharacter.Draw();
 
-                Game.SpriteBatch.Draw(Game.LevelEdgeTexture, new Rect(_LevelTopLeft.X - 16, -1000, 4, 2000), Color.White);
-                Game.SpriteBatch.Draw(Game.LevelEdgeTexture, new Rect(_LevelTopLeft.X + (_Size.X * Block.BLOCK_SIZE_MULTIPLIER) - 16, -1000, 4, 2000), Color.White);
+                GameCore.SpriteBatch.Draw(Game.LevelEdgeTexture, new Rect(_LevelTopLeft.X - 16, -1000, 4, 2000), Color.White);
+                GameCore.SpriteBatch.Draw(Game.LevelEdgeTexture, new Rect(_LevelTopLeft.X + (_Size.X * Block.BLOCK_SIZE_MULTIPLIER) - 16, -1000, 4, 2000), Color.White);
 
             }
 
@@ -77,8 +73,8 @@ namespace LD30.Logic
                 _WorldOffset = i;
                 _LevelTopLeft = Vector2.Zero + (Vector2.UnitX * i * _Size.X * Block.BLOCK_SIZE_MULTIPLIER);
 
-                LevelWallLeft.PhysicsFixture.Body.Position = new Vector2(_LevelTopLeft.X - 32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
-                LevelWallRight.PhysicsFixture.Body.Position = new Vector2(_LevelTopLeft.X + (_Size.X * Block.BLOCK_SIZE_MULTIPLIER), _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
+                _LevelWallLeft.PhysicsFixture.Body.Position = new Vector2(_LevelTopLeft.X - 32, _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
+                _LevelWallRight.PhysicsFixture.Body.Position = new Vector2(_LevelTopLeft.X + (_Size.X * Block.BLOCK_SIZE_MULTIPLIER), _Size.Y * Block.BLOCK_SIZE_MULTIPLIER * 0.5f) * 0.01f;
 
 
                 for (int x = 0; x < _Size.X; x++)
@@ -133,7 +129,7 @@ namespace LD30.Logic
                 if (x >= _Size.X || x < 0) throw new ArgumentOutOfRangeException("position");
                 if (y >= _Size.Y || y < 0) throw new ArgumentOutOfRangeException("position");
 
-                
+
 
                 _BlockData[x, y] = new Block(type, _LevelTopLeft + (position * Block.BLOCK_SIZE_MULTIPLIER));
             }
@@ -198,11 +194,9 @@ namespace LD30.Logic
                 }
                 for (int y = 0; y < _Size.Y; y++)
                 {
-                    if (_BlockData[0, y] != null)
-                    {
 
-                        _BlockData[0, y] = null;
-                    }
+                    _BlockData[0, y] = null;
+
                 }
                 OffsetWorld(_WorldOffset);
             }
@@ -213,11 +207,9 @@ namespace LD30.Logic
             {
                 for (int y = 0; y < _Size.Y; y++)
                 {
-                    if (_BlockData[0, y] != null)
-                    {
-                        _BlockData[0, y].Dispose();
-                        _BlockData[0, y] = null;
-                    }
+                    if (_BlockData[0, y] == null) continue;
+                    _BlockData[0, y].Dispose();
+                    _BlockData[0, y] = null;
                 }
                 for (int x = 0; x < _Size.X - 1; x++)
                 {
@@ -228,10 +220,7 @@ namespace LD30.Logic
                 }
                 for (int y = 0; y < _Size.Y; y++)
                 {
-                    if (_BlockData[(int)_Size.X - 1, y] != null)
-                    {
-                        _BlockData[(int)_Size.X - 1, y] = null;
-                    }
+                    _BlockData[(int)_Size.X - 1, y] = null;
                 }
                 OffsetWorld(_WorldOffset);
             }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bounce.Multiplayer.Ghosts;
 using InsaneDev.Networking;
 using LD30.Logic;
 using LD30.Multiplayer.DataObjects;
@@ -136,6 +135,16 @@ namespace LD30.Multiplayer
 
                         case Manager.PID_WORLDSHIFTRIGHT:
                             Game.PlayerLevel.ShiftRight();
+                            int playersA = (int)objects[0];
+                            int rightPlayerA = ((_MyWorldPosition + playersA) - 1) % playersA;
+                            Block.BlockTypes[] newCollumnA = GetKnownPlayerByID(rightPlayerA).Level.GetCollumn(Game.GAMELEVELSIZE-1);
+
+                            for (int y = 0; y < Game.GAMELEVELSIZE; y++)
+                            {
+                                if (newCollumnA[y] == Block.BlockTypes.Air) continue;
+                                Game.PlayerLevel.PlaceBlock(newCollumnA[y], new Vector2(0, y));
+                            }
+                            SendWorldData();
                             break;
                         case Manager.PID_WORLDSHIFTLEFT:
                             Game.PlayerLevel.ShiftLeft();

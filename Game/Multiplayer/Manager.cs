@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Bounce.Multiplayer;
 using Bounce.Multiplayer.Ghosts;
 using InsaneDev.Networking;
-using Microsoft.Xna.Framework;
 
 namespace LD30.Multiplayer
 {
