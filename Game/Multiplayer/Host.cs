@@ -10,6 +10,7 @@ namespace LD30.Multiplayer
 {
     class Host : Base
     {
+        public static float Difficulty = 0;
         public static DateTime _LastShift = DateTime.Now;
         public static TimeSpan _ShiftInterval = new TimeSpan(0, 0, 0, 1);
         private static long _NextObjectID = 0;
@@ -51,6 +52,11 @@ namespace LD30.Multiplayer
             {
                 if (_ConnectedClients.Count > 1 && _CurrentGameState == Game.GameState.Playing)
                 {
+                    Difficulty += 2f;
+                    if (_ShiftInterval.TotalMilliseconds > 300)
+                    {
+                        _ShiftInterval = TimeSpan.FromMilliseconds(2000 - Difficulty);
+                    }
                     lock (_ConnectedClients)
                     {
                         Packet shiftRightPacket = new Packet(Manager.PID_WORLDSHIFTRIGHT);
@@ -63,6 +69,16 @@ namespace LD30.Multiplayer
 
 
             }
+        }
+
+        public static void ChangeGameState(Game.GameState newState)
+        {
+            if (_CurrentGameState == Game.GameState.CountDown && newState == Game.GameState.Playing)
+            {
+                Difficulty = 0;
+                _ShiftInterval = new TimeSpan(0, 0, 0, 1);
+            }
+            _CurrentGameState = newState;
         }
 
         public virtual void ShutDown()
@@ -115,7 +131,7 @@ namespace LD30.Multiplayer
                         switch (p.Type)
                         {
                             case Manager.PID_CHANGEGAMEMODE:
-                                _CurrentGameState = (Game.GameState)objects[0];
+                               ChangeGameState((Game.GameState)objects[0]);
                                 Manager._Server.SendToAll(p);
                                 break;
                             case Manager.PID_REQUESTPLAYERDETAILS:
