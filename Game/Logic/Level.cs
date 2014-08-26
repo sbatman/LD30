@@ -127,11 +127,16 @@ namespace LD30.Logic
             {
                 int x = (int)position.X;
                 int y = (int)position.Y;
-                if (x >= _Size.X || x < 0) throw new ArgumentOutOfRangeException("position");
-                if (y >= _Size.Y || y < 0) throw new ArgumentOutOfRangeException("position");
+                if (x >= _Size.X || x < 0) return;
+                if (y >= _Size.Y || y < 0) return;
 
 
-
+                if (_BlockData[x, y] != null)
+                {
+                    _BlockData[x, y].Dispose();
+                    _BlockData[x, y] = null;
+                }
+                if (type == Block.BlockTypes.Air) return;
                 _BlockData[x, y] = new Block(type, _LevelTopLeft + (position * Block.BLOCK_SIZE_MULTIPLIER));
             }
         }

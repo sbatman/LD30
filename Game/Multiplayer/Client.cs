@@ -179,7 +179,7 @@ namespace LD30.Multiplayer
             }
         }
 
-        private void SendWorldData()
+        public void SendWorldData()
         {
             if (_MyPlayerID == -1) return;
             Packet p = Game.PlayerLevel.ToPacket();

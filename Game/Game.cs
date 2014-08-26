@@ -29,6 +29,7 @@ namespace LD30
 
         //game
         internal static Level PlayerLevel;
+        internal static Logic.AbilityBar PlayerAbilityBar;
 
         //content
         internal static Texture2D ContentCharacterTexture;
@@ -52,6 +53,9 @@ namespace LD30
         {
             Core.LoadContent(Content, GraphicsDevice);
             Core.Gravity.Value = new Vector2(0, 9);
+
+            PlayerAbilityBar = new AbilityBar();
+            PlayerAbilityBar.LoadContent();
             //Sort out blocks
             BlockData.Add(Block.BlockTypes.Main, new Block.BlockData() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
 
@@ -97,6 +101,7 @@ namespace LD30
                 switch (_CurrentGameState)
                 {
                     case GameState.Idle:
+                        PlayerAbilityBar.Update();
                         break;
                     case GameState.CountDown:
                         if (DateTime.Now - _CountDownStart > TimeSpan.FromSeconds(3))
@@ -107,6 +112,21 @@ namespace LD30
                         }
                         break;
                     case GameState.Playing:
+                        PlayerAbilityBar.Update();
+                        break;
+                }
+            }
+            else
+            {
+                switch (_CurrentGameState)
+                {
+                    case GameState.Idle:
+                        PlayerAbilityBar.Update();
+                        break;
+                    case GameState.CountDown:
+                        break;
+                    case GameState.Playing:
+                        PlayerAbilityBar.Update();
                         break;
                 }
             }
@@ -118,6 +138,21 @@ namespace LD30
             if (PlayerLevel != null) PlayerLevel.Draw();
 
             Manager.LevelObjectDraw();
+            SpriteBatch.End();
+            SpriteBatch.Begin();
+            switch (_CurrentGameState)
+            {
+                case GameState.Idle:
+                    PlayerAbilityBar.Draw();
+                    break;
+                case GameState.CountDown:
+                    break;
+                case GameState.Playing:
+                    PlayerAbilityBar.Draw();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             SpriteBatch.End();
         }
 
@@ -170,7 +205,7 @@ namespace LD30
         protected override void UnloadContent()
         {
             Manager.Dispose();
-            
+
         }
 
         internal static void ChangeGameMode(GameState newGameMode)
