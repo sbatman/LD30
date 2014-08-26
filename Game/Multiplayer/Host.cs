@@ -19,6 +19,9 @@ namespace LD30.Multiplayer
         private static ConnectedClient _GameHost;
         private static bool _GameHostConnected = false;
         private static Game.GameState _CurrentGameState;
+        private static int Direction;
+        private static int NextDirectionShift;
+        private static Random RND = new Random();
         internal Host()
         {
             Init(new IPEndPoint(IPAddress.Any, 3456), typeof(ConnectedClient));
@@ -52,16 +55,33 @@ namespace LD30.Multiplayer
             {
                 if (_ConnectedClients.Count > 1 && _CurrentGameState == Game.GameState.Playing)
                 {
-                    Difficulty += 2f;
+                    Difficulty += 10f;
                     if (_ShiftInterval.TotalMilliseconds > 300)
                     {
                         _ShiftInterval = TimeSpan.FromMilliseconds(2000 - Difficulty);
                     }
                     lock (_ConnectedClients)
                     {
-                        Packet shiftRightPacket = new Packet(Manager.PID_WORLDSHIFTRIGHT);
-                        shiftRightPacket.AddInt(_ConnectedClients.Count);
-                        SendToAll(shiftRightPacket);
+                        NextDirectionShift--;
+                        if (NextDirectionShift <= 0)
+                        {
+                            NextDirectionShift = RND.Next(2, 5);
+                            Direction = RND.Next(0, 2);
+                        }
+                        if (Direction == 0)
+                        {
+                            Packet shiftRightPacket = new Packet(Manager.PID_WORLDSHIFTRIGHT);
+                            shiftRightPacket.AddInt(_ConnectedClients.Count);
+                            SendToAll(shiftRightPacket);
+                        }
+                        else
+                        {
+                            Packet shiftLeftPacket = new Packet(Manager.PID_WORLDSHIFTLEFT);
+                            shiftLeftPacket.AddInt(_ConnectedClients.Count);
+                            SendToAll(shiftLeftPacket);
+                        }
+
+
                     }
                 }
                 _LastShift = DateTime.Now;
@@ -131,7 +151,7 @@ namespace LD30.Multiplayer
                         switch (p.Type)
                         {
                             case Manager.PID_CHANGEGAMEMODE:
-                               ChangeGameState((Game.GameState)objects[0]);
+                                ChangeGameState((Game.GameState)objects[0]);
                                 Manager._Server.SendToAll(p);
                                 break;
                             case Manager.PID_REQUESTPLAYERDETAILS:
