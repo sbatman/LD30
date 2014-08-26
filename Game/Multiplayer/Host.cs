@@ -55,8 +55,8 @@ namespace LD30.Multiplayer
             {
                 if (_ConnectedClients.Count > 1 && _CurrentGameState == Game.GameState.Playing)
                 {
-                    Difficulty += 10f;
-                    if (_ShiftInterval.TotalMilliseconds > 300)
+                    Difficulty += 30.0f;
+                    if (_ShiftInterval.TotalMilliseconds > 500)
                     {
                         _ShiftInterval = TimeSpan.FromMilliseconds(2000 - Difficulty);
                     }
@@ -65,8 +65,8 @@ namespace LD30.Multiplayer
                         NextDirectionShift--;
                         if (NextDirectionShift <= 0)
                         {
-                            NextDirectionShift = RND.Next(2, 5);
-                            Direction = RND.Next(0, 2);
+                            NextDirectionShift = RND.Next(10, 20);
+                            Direction = Direction == 0 ? 1 : 0;
                         }
                         if (Direction == 0)
                         {

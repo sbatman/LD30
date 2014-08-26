@@ -136,12 +136,12 @@ namespace LD30.Multiplayer
                             Game.PlayerLevel.ShiftRight();
                             int playersA = (int)objects[0];
                             int rightPlayerA = ((_MyWorldPosition + playersA) - 1) % playersA;
-                            Block.BlockTypes[] newCollumnA = GetKnownPlayerByID(rightPlayerA).Level.GetCollumn(Game.GAMELEVELSIZE - 1);
+                            Tuple<Block.BlockTypes, int>[] newCollumnA = GetKnownPlayerByID(rightPlayerA).Level.GetCollumn(Game.GAMELEVELSIZE - 1);
 
                             for (int y = 0; y < Game.GAMELEVELSIZE; y++)
                             {
-                                if (newCollumnA[y] == Block.BlockTypes.Air) continue;
-                                Game.PlayerLevel.PlaceBlock(newCollumnA[y], new Vector2(0, y));
+                                if (newCollumnA[y].Item1 == Block.BlockTypes.Air) continue;
+                                Game.PlayerLevel.PlaceBlock(newCollumnA[y].Item1, new Vector2(0, y), newCollumnA[y].Item2);
                             }
                             SendWorldData();
                             break;
@@ -149,12 +149,12 @@ namespace LD30.Multiplayer
                             Game.PlayerLevel.ShiftLeft();
                             int players = (int)objects[0];
                             int rightPlayer = (_MyWorldPosition + 1) % players;
-                            Block.BlockTypes[] newCollumn = GetKnownPlayerByID(rightPlayer).Level.GetCollumn(0);
+                            Tuple<Block.BlockTypes, int>[] newCollumn = GetKnownPlayerByID(rightPlayer).Level.GetCollumn(0);
 
                             for (int y = 0; y < Game.GAMELEVELSIZE; y++)
                             {
-                                if (newCollumn[y] == Block.BlockTypes.Air) continue;
-                                Game.PlayerLevel.PlaceBlock(newCollumn[y], new Vector2(Game.GAMELEVELSIZE - 1, y));
+                                if (newCollumn[y].Item1 == Block.BlockTypes.Air) continue;
+                                Game.PlayerLevel.PlaceBlock(newCollumn[y].Item1, new Vector2(Game.GAMELEVELSIZE - 1, y), newCollumn[y].Item2);
                             }
                             SendWorldData();
                             break;

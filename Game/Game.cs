@@ -34,6 +34,7 @@ namespace LD30
         //content
         internal static Texture2D ContentCharacterTexture;
         internal static Texture2D LevelEdgeTexture;
+        internal static Texture2D[] BackgroundTextures = new Texture2D[5];
         internal static readonly Dictionary<Block.BlockTypes, Block.BlockData> BlockData = new Dictionary<Block.BlockTypes, Block.BlockData>();
 
         //test
@@ -51,6 +52,9 @@ namespace LD30
 
         protected override void CoreLoadContent()
         {
+            for (int i = 0; i < 5; i++)
+                BackgroundTextures[i] = ContentManager.Load<Texture2D>("Graphics/Backgrounds/" + i);
+
             Core.LoadContent(Content, GraphicsDevice);
             Core.Gravity.Value = new Vector2(0, 9);
 
@@ -58,37 +62,42 @@ namespace LD30
             PlayerAbilityBar.LoadContent();
             //Sort out blocks
             BlockData.Add(Block.BlockTypes.Main, new Block.BlockData() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BaseRock") });
+            BlockData.Add(Block.BlockTypes.Exploding, new Block.BlockData() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/TNTBlock") });
+            BlockData.Add(Block.BlockTypes.BigBomb, new Block.BlockData() { Colour = Color.White, Size = Vector2.One * 32, Texture = Content.Load<Texture2D>("Graphics/Blocks/BBBlock") });
 
             PlayerLevel = new Level(Vector2.One * GAMELEVELSIZE);
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(0, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(1, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(2, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(3, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(4, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(5, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(6, 4));
 
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(8, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(9, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(10, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(11, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(12, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(13, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(14, 4));
-            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(15, 4));
-
+            ResetMap();
 
             //Sort out characters
             ContentCharacterTexture = Content.Load<Texture2D>("Graphics/Characters/Main");
             LevelEdgeTexture = Content.Load<Texture2D>("Graphics/Level/Bar");
 
             testcharacter = new Character(ContentCharacterTexture);
+            testcharacter.Position = (Vector2.UnitX * 128);
             PlayerLevel.SetActiveCharacter(testcharacter);
         }
 
         protected override void CorePostLoadContent()
         {
 
+        }
+
+        protected static void ResetMap()
+        {
+            PlayerLevel.ClearWorld();
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(2, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(3, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(4, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(5, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(6, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(7, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(8, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(9, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(10, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(11, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(12, 12));
+            PlayerLevel.PlaceBlock(Block.BlockTypes.Main, new Vector2(13, 12));
         }
 
         protected override void CoreUpdate()
@@ -213,6 +222,14 @@ namespace LD30
             if (_CurrentGameState == GameState.Idle && newGameMode == GameState.CountDown)
             {
                 _CountDownStart = DateTime.Now;
+
+            }
+            if (_CurrentGameState == GameState.CountDown && newGameMode == GameState.Playing)
+            {
+                PlayerAbilityBar.ResetAbilityTimers();
+                PlayerLevel.GetActiveCharacter().Position = PlayerLevel.WorldTopLeft + (Vector2.UnitX * 128);
+                ResetMap();
+                if (Manager._Client != null) Manager._Client.SendWorldData();
             }
             _CurrentGameState = newGameMode;
 

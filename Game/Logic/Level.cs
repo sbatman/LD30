@@ -1,5 +1,4 @@
-﻿using System;
-using InsaneDev.Networking;
+﻿using InsaneDev.Networking;
 using LD30.Multiplayer;
 using Microsoft.Xna.Framework;
 using NerfCorev2;
@@ -23,9 +22,19 @@ namespace LD30.Logic
 
         private readonly object _LockingObject = new object();
 
+        public Vector2 WorldTopLeft
+        {
+            get { return _LevelTopLeft; }
+        }
+
         public Vector2 Size
         {
             get { return _Size; }
+        }
+
+        public int WorldOffset
+        {
+            get { return _WorldOffset; }
         }
 
         public Level(Vector2 size)
@@ -42,6 +51,10 @@ namespace LD30.Logic
 
         public virtual void Draw()
         {
+            GameCore.SpriteBatch.Draw(Game.BackgroundTextures[_WorldOffset % 5],
+                new Rect(WorldTopLeft.X - (Block.BLOCK_SIZE_MULTIPLIER * 0.5f), WorldTopLeft.Y - (Block.BLOCK_SIZE_MULTIPLIER * 0.5f), Block.BLOCK_SIZE_MULTIPLIER * Game.GAMELEVELSIZE,
+                    Block.BLOCK_SIZE_MULTIPLIER * Game.GAMELEVELSIZE), Color.White);
+
             lock (_LockingObject)
             {
                 for (int x = 0; x < _Size.X; x++)
@@ -114,14 +127,14 @@ namespace LD30.Logic
                 _ActiveCharacter.Update();
                 GameCore.PrimaryCamera.Position = _ActiveCharacter.Position - (GameCore.ScreenSize * 0.5f);
 
-                if (_ActiveCharacter.Position.Y > 1000)
+                if (_ActiveCharacter.Position.Y > (Game.GAMELEVELSIZE + 5) * Block.BLOCK_SIZE_MULTIPLIER)
                 {
                     _ActiveCharacter.Position = new Vector2(_ActiveCharacter.Position.X, 0);
                 }
             }
         }
 
-        public virtual void PlaceBlock(Block.BlockTypes type, Vector2 position)
+        public virtual void PlaceBlock(Block.BlockTypes type, Vector2 position, int state = 0)
         {
             lock (_LockingObject)
             {
@@ -138,6 +151,20 @@ namespace LD30.Logic
                 }
                 if (type == Block.BlockTypes.Air) return;
                 _BlockData[x, y] = new Block(type, _LevelTopLeft + (position * Block.BLOCK_SIZE_MULTIPLIER));
+                _BlockData[x, y].SetState(state);
+            }
+        }
+
+        public virtual void ClearWorld()
+        {
+            for (int x = 0; x < _Size.X; x++)
+            {
+                for (int y = 0; y < _Size.Y; y++)
+                {
+                    if (_BlockData[x, y] == null) continue;
+                    _BlockData[x, y].Dispose();
+                    _BlockData[x, y] = null;
+                }
             }
         }
 
@@ -171,6 +198,18 @@ namespace LD30.Logic
             }
         }
 
+        public virtual Block GetBlock(Vector2 position)
+        {
+            lock (_LockingObject)
+            {
+                int x = (int)position.X - (_WorldOffset * Game.GAMELEVELSIZE);
+                int y = (int)position.Y;
+                if (x >= _Size.X || x < 0) return null;
+                if (y >= _Size.Y || y < 0) return null;
+                return _BlockData[x, y];
+            }
+        }
+
         public virtual float GetLevelWidthGC()
         {
             lock (_LockingObject)
@@ -196,6 +235,7 @@ namespace LD30.Logic
                     for (int y = 0; y < _Size.Y; y++)
                     {
                         _BlockData[x, y] = _BlockData[x - 1, y];
+                        if (_BlockData[x, y] != null) _BlockData[x, y].Shifted();
                     }
                 }
                 for (int y = 0; y < _Size.Y; y++)
@@ -222,6 +262,7 @@ namespace LD30.Logic
                     for (int y = 0; y < _Size.Y; y++)
                     {
                         _BlockData[x, y] = _BlockData[x + 1, y];
+                        if (_BlockData[x, y] != null) _BlockData[x, y].Shifted();
                     }
                 }
                 for (int y = 0; y < _Size.Y; y++)
@@ -255,6 +296,7 @@ namespace LD30.Logic
                         p.AddInt(x);
                         p.AddInt(y);
                         p.AddInt((int)_BlockData[x, y].BlockType);
+                        p.AddInt(_BlockData[x, y].GetState());
                     }
                 }
                 return p;

@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Bounce.Multiplayer.Ghosts;
-using InsaneDev.Networking;
 
 namespace LD30.Multiplayer
 {
