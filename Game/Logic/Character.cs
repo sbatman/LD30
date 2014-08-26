@@ -118,6 +118,20 @@ namespace LD30.Logic
                                 break;
                             }
                         }
+                        if (Phys.CollisionBetween(_PhysicsObject.PhysicsFixture, c.Contact.FixtureB, typeof(Character), typeof(Block)))
+                        {
+                            Vector2 dif;
+                            FixedArray2<Vector2> p;
+                            c.Contact.GetWorldManifold(out dif, out p);
+                            dif.Normalize();
+                            dif.X = 0;
+                            if (dif.Y > 0)
+                            {
+                                _PhysicsObject.PhysicsFixture.Body.ApplyLinearImpulse(-dif - (Vector2.UnitY * StatJump));
+                                _Jumped = true;
+                                break;
+                            }
+                        }
                     }
                     c = c.Next;
                 }

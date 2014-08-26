@@ -4,6 +4,7 @@ using NerfCorev2;
 using NerfCorev2.PhysicsSystem;
 using NerfCorev2.PhysicsSystem.Dynamics;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.XInput;
 
 namespace LD30.Logic
 {
@@ -12,7 +13,9 @@ namespace LD30.Logic
         internal enum BlockTypes
         {
             Air,
-            Main
+            Main,
+            Exploding,
+            BigBomb
         }
 
         public const int BLOCK_SIZE_MULTIPLIER = 32;
@@ -31,6 +34,7 @@ namespace LD30.Logic
         private Phys _PhysicsObject;
         private bool _HasPhysics;
         private BlockTypes _BlockType;
+        private int _State;
 
         private bool _Disposed;
 
@@ -54,7 +58,7 @@ namespace LD30.Logic
                 _PhysicsObject.PhysicsFixture.Body.BodyType = BodyType.Static;
                 _PhysicsObject.PhysicsFixture.UserData = this;
             }
-
+            _State = 0;
         }
 
         public virtual void SetPosition(Vector2 newPosition)
@@ -62,7 +66,7 @@ namespace LD30.Logic
             lock (this)
             {
                 _Position = newPosition;
-                if (_HasPhysics) _PhysicsObject.PhysicsFixture.Body.Position = newPosition*0.01f;
+                if (_HasPhysics) _PhysicsObject.PhysicsFixture.Body.Position = newPosition * 0.01f;
             }
         }
 
@@ -70,12 +74,64 @@ namespace LD30.Logic
         {
             lock (this)
             {
-                GameCore.SpriteBatch.Draw(_BlockTexture, _Position - (_Size*0.5f), _Colour);
+                GameCore.SpriteBatch.Draw(_BlockTexture, _Position - (_Size * 0.5f), _Colour);
             }
         }
 
         public virtual void Update()
         {
+            switch (_BlockType)
+            {
+                case BlockTypes.Air:
+                    break;
+                case BlockTypes.Main:
+                    break;
+                case BlockTypes.Exploding:
+                    if (_State <= 0)
+                    {
+                        Vector2 pos = (_Position / Block.BLOCK_SIZE_MULTIPLIER);
+                        pos.X -= (Game.PlayerLevel.WorldOffset * Game.GAMELEVELSIZE);
+                        Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos);
+                        Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos - Vector2.UnitX);
+                        Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos + Vector2.UnitX);
+                        Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos - Vector2.UnitY);
+                        Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos + Vector2.UnitY);
+                        Dispose();
+                    }
+                    break;
+                case BlockTypes.BigBomb:
+                    if (_State <= 0)
+                    {
+                        Vector2 pos = (_Position / Block.BLOCK_SIZE_MULTIPLIER);
+                        pos.X -= (Game.PlayerLevel.WorldOffset * Game.GAMELEVELSIZE);
+                        Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos);
+                        for (int i = 0; i < 16; i++) Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos - (Vector2.UnitX * i));
+                        for (int i = 0; i < 16; i++) Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos + (Vector2.UnitX * i));
+                        for (int i = 0; i < 16; i++) Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos - (Vector2.UnitY * i));
+                        for (int i = 0; i < 16; i++) Game.PlayerLevel.PlaceBlock(BlockTypes.Air, pos + (Vector2.UnitY * i));
+                        Dispose();
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public virtual void Shifted()
+        {
+            switch (_BlockType)
+            {
+                case BlockTypes.Air:
+                    break;
+                case BlockTypes.Main:
+                    break;
+                case BlockTypes.BigBomb:
+                case BlockTypes.Exploding:
+                    _State--;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
         }
 
@@ -86,7 +142,7 @@ namespace LD30.Logic
                 _BlockTexture = null;
                 if (_HasPhysics)
                 {
-                    NerfCorev2.PhysicsSystem.Core.RemoveFixture(_PhysicsObject.PhysicsFixture);
+                    Core.RemoveFixture(_PhysicsObject.PhysicsFixture);
                     _PhysicsObject = null;
                     _HasPhysics = false;
                 }
@@ -97,6 +153,16 @@ namespace LD30.Logic
         public bool IsDisposed()
         {
             return _Disposed;
+        }
+
+        public virtual int GetState()
+        {
+            return _State;
+        }
+
+        public virtual void SetState(int value)
+        {
+            _State = value;
         }
     }
 }

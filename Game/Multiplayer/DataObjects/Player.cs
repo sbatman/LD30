@@ -7,7 +7,7 @@ namespace LD30.Multiplayer.DataObjects
         private long _ID;
         private string _Name;
         private int _WorldOffset;
-        private Ghosts.Level _Level;
+        private Level _Level;
 
         public long ID
         {
